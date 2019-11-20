@@ -11,6 +11,10 @@ namespace Capstone_Project_Starting
     {
         static void Main(string[] args)
         {
+            //CURRENT PROBLEMS
+
+            //If user enters with no words in word list, tells them multiple times
+                                                  
             string customWordDataPath = @"HangmanInfo\WordList.txt";
             string wordPackDataPath = @"HangmanInfo\WordPacks.txt";
 
@@ -127,7 +131,9 @@ namespace Capstone_Project_Starting
             }
             catch
             {
-
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.WriteLine($"  [ERROR] ");
+                Console.ForegroundColor = ConsoleColor.White;
             }
         }
 
@@ -139,10 +145,17 @@ namespace Capstone_Project_Starting
         /// <param name="alphabet"></param>
         private static void HangmanWordIntializer(string customWordDataPath, string wordPackDataPath, List<string> hiddenWords, List<char> alphabet)
         {
+            
+
+            //
+            // Empties out the hidden words list, can be replaced if wish to have it check to make sure there isn't duplicate words.
+            //
+            hiddenWords.Clear();
+
             bool customWordErrorOccured = ReadWordsFromFile(customWordDataPath, hiddenWords);
 
             //
-            // Gives the user a heads up if the custom words ether include 
+            // Gives the user a heads up if the custom words aren't included.
             //
             if (customWordErrorOccured == true)
             {
@@ -167,38 +180,47 @@ namespace Capstone_Project_Starting
                     {
                         case (1):
                             {
+                                HangmanWordPacks(hiddenWords, currentLine);
                                 break;
                             }
                         case (2):
                             {
+                                HangmanWordPacks(hiddenWords, currentLine);
                                 break;
                             }
                         case (3):
                             {
+                                HangmanWordPacks(hiddenWords, currentLine);
                                 break;
                             }
                         case (4):
                             {
+                                HangmanWordPacks(hiddenWords, currentLine);
                                 break;
                             }
                         case (5):
                             {
+                                HangmanWordPacks(hiddenWords, currentLine);
                                 break;
                             }
                         case (6):
                             {
+                                HangmanWordPacks(hiddenWords, currentLine);
                                 break;
                             }
                         case (7):
                             {
+                                HangmanWordPacks(hiddenWords, currentLine);
                                 break;
                             }
                         case (8):
                             {
+                                HangmanWordPacks(hiddenWords, currentLine);
                                 break;
                             }
                         case (9):
                             {
+                                HangmanWordPacks(hiddenWords, currentLine);
                                 break;
                             }
                         default:
@@ -450,91 +472,103 @@ namespace Capstone_Project_Starting
             bool exittoMenu = false;
             char userConvertedResponse;
             bool validResponse;
-
-            do
+            try
             {
-
-                DisplayScreenHeader("Word Packs");
-
-                WordPackMenuLine("1", "Food Word Pack (20 Words)", wordPackDataPath);
-                WordPackMenuLine("2", "Gem Word Pack (20 Words)", wordPackDataPath);
-                WordPackMenuLine("3", "Not Implemented", wordPackDataPath);
-                WordPackMenuLine("4", "Not Implemented", wordPackDataPath);
-                WordPackMenuLine("5", "Not Implemented", wordPackDataPath);
-                WordPackMenuLine("6", "Not Implemented", wordPackDataPath);
-                WordPackMenuLine("7", "Not Implemented", wordPackDataPath);
-                WordPackMenuLine("8", "Not Implemented", wordPackDataPath);
-                WordPackMenuLine("9", "Not Implemented", wordPackDataPath);
-                MainMenuLine("0", "Exit to Menu");
+                File.ReadLines(wordPackDataPath);
                 do
                 {
 
-                    ConsoleKeyInfo userInput = Console.ReadKey();
-                    userConvertedResponse = char.Parse(userInput.KeyChar.ToString().ToLower());
-                    validResponse = true;
-                    switch (userConvertedResponse)
+                    DisplayScreenHeader("Word Packs");
+
+                    WordPackMenuLine("1", "Vegetable Word Pack (10 Words)", wordPackDataPath);
+                    WordPackMenuLine("2", "Gem Word Pack (20 Words)", wordPackDataPath);
+                    WordPackMenuLine("3", "Not Implemented", wordPackDataPath);
+                    WordPackMenuLine("4", "Not Implemented", wordPackDataPath);
+                    WordPackMenuLine("5", "Not Implemented", wordPackDataPath);
+                    WordPackMenuLine("6", "Not Implemented", wordPackDataPath);
+                    WordPackMenuLine("7", "Not Implemented", wordPackDataPath);
+                    WordPackMenuLine("8", "Not Implemented", wordPackDataPath);
+                    WordPackMenuLine("9", "Not Implemented", wordPackDataPath);
+                    MainMenuLine("0", "Exit to Menu");
+                    do
                     {
-                        case ('1'):
-                            {
-                                string onOrOff = File.ReadLines(wordPackDataPath).Skip(0).Take(1).First();
-                                string[] previousFile = File.ReadAllLines(wordPackDataPath);
-                                if (onOrOff.Contains("0"))
-                                {  try
-                                    {
-                                        previousFile[0] = "FoodPack: 1";
-                                        File.WriteAllLines(wordPackDataPath, previousFile);
-                                    }
-                                    catch
-                                    {
 
-                                    }
-                                }
-                                else
+                        ConsoleKeyInfo userInput = Console.ReadKey();
+                        userConvertedResponse = char.Parse(userInput.KeyChar.ToString().ToLower());
+                        validResponse = true;
+                        switch (userConvertedResponse)
+                        {
+                            case ('1'):
                                 {
-                                    try
+                                    string onOrOff = File.ReadLines(wordPackDataPath).Skip(0).Take(1).First();
+                                    string[] previousFile = File.ReadAllLines(wordPackDataPath);
+                                    if (onOrOff.Contains("0"))
                                     {
-                                        previousFile[0] = "FoodPack: 0";
-                                        File.WriteAllLines(wordPackDataPath, previousFile);
-                                    }
-                                    catch
-                                    {
+                                        try
+                                        {
+                                            previousFile[0] = "VeggiePack: 1";
+                                            File.WriteAllLines(wordPackDataPath, previousFile);
+                                        }
+                                        catch
+                                        {
 
+                                        }
                                     }
+                                    else
+                                    {
+                                        try
+                                        {
+                                            previousFile[0] = "VeggiePack: 0";
+                                            File.WriteAllLines(wordPackDataPath, previousFile);
+                                        }
+                                        catch
+                                        {
+
+                                        }
+                                    }
+                                    break;
                                 }
-                                break;
-                            }
-                        case ('2'):
-                            {
-                                string line = File.ReadLines(wordPackDataPath).Skip(1).Take(1).First();
-                                break;
-                            }
-                        case ('3'):
-                            {
+                            case ('2'):
+                                {
+                                    string line = File.ReadLines(wordPackDataPath).Skip(1).Take(1).First();
+                                    break;
+                                }
+                            case ('3'):
+                                {
 
-                                break;
-                            }
-                        case ('4'):
-                            {
-                                break;
-                            }
-                        case ('5'):
-                            {
-                                break;
-                            }
-                        case ('0'):
-                            {
-                                exittoMenu = true;
-                                break; 
-                            }
-                        default:
-                            {
-                                Console.WriteLine(" Invalid choice. Please select a number 1-9");
-                                validResponse = false;
-                                break;
-                            }
-                    }
-                } while (!validResponse);
-            } while (!exittoMenu);
+                                    break;
+                                }
+                            case ('4'):
+                                {
+                                    break;
+                                }
+                            case ('5'):
+                                {
+                                    break;
+                                }
+                            case ('0'):
+                                {
+                                    exittoMenu = true;
+                                    break;
+                                }
+                            default:
+                                {
+                                    Console.WriteLine(" Invalid choice. Please select a number 1-9");
+                                    validResponse = false;
+                                    break;
+                                }
+                        }
+                    } while (!validResponse);
+                } while (!exittoMenu);
+            }
+            catch
+            {
+                DisplayScreenHeader("Word Packs");
+
+                Console.WriteLine("Error!");
+                Console.WriteLine("The program cannot reach the word packs file at HangmanInfo/WordPacks.txt");
+                Console.WriteLine("Please try making sure the file exists");
+            }
         }
 
         /// <summary>
@@ -544,9 +578,50 @@ namespace Capstone_Project_Starting
         /// <param name="hiddenWords"></param>
         private static void HangmanWordPacks(List<string> hiddenWords, int currentLine)
         {
-            switch (switch_on)
+            switch (currentLine)
             {
+                case (1):
+                {
+                        hiddenWords.Add("cucumber");
+                        hiddenWords.Add("artichoke");
+                        hiddenWords.Add("rutabaga");
+                        hiddenWords.Add("radicchio");
+                        hiddenWords.Add("celery");
+                        hiddenWords.Add("cabbage");
+                        hiddenWords.Add("arugula");
+                        hiddenWords.Add("arrowroot");
+                        hiddenWords.Add("eggplant");
+                        hiddenWords.Add("lettuce");
+                        break;
+                }
+                case (2):
+                {
+                        break;
+                }
+                case (3):
+                {
+                        break;
+                }
+                case (4):
+                {
+                        break;
+                }
+                case (5):
+                {
+                        break;
+                }
+                case (6):
+                    {
+                        break;
+                    }
+                case (7):
+                    {
+                        break;
+                    }
                 default:
+                    {
+                        break;
+                    }
             }
         }
 
