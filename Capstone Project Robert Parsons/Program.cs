@@ -12,12 +12,13 @@ namespace Capstone_Project_Starting
         static void Main(string[] args)
         {
             string customWordDataPath = @"HangmanInfo\WordList.txt";
+            string wordPackDataPath = @"HangmanInfo\WordPacks.txt";
 
-            MainMenu(customWordDataPath);
+            MainMenu(customWordDataPath, wordPackDataPath);
         }
 
 
-        private static void MainMenu(string customWordDataPath)
+        private static void MainMenu(string customWordDataPath, string wordPackDataPath)
         {
             //
             // variable declaration
@@ -32,11 +33,11 @@ namespace Capstone_Project_Starting
 
                 DisplayScreenHeader("Application Menu");
 
-                MenuLine("1", "Play Hangman");
-                MenuLine("2", "Add Custom Words");
-                MenuLine("3", "Delete Words");
-                MenuLine("4", "Add/Remove Word Packs");
-                MenuLine("5", "Quit Application");
+                MainMenuLine("1", "Play Hangman");
+                MainMenuLine("2", "Add Custom Words");
+                MainMenuLine("3", "Delete Words");
+                MainMenuLine("4", "Add/Remove Word Packs");
+                MainMenuLine("5", "Quit Application");
                 do
                 {
 
@@ -49,7 +50,7 @@ namespace Capstone_Project_Starting
                             {
                                 do
                                 {
-                                    userDoneWithHangman = Hangman(customWordDataPath);
+                                    userDoneWithHangman = Hangman(customWordDataPath, wordPackDataPath);
                                 } while (!userDoneWithHangman);
 
                                 break;
@@ -66,6 +67,7 @@ namespace Capstone_Project_Starting
                             }
                         case ('4'):
                             {
+                                DisplayAddWordPacks(wordPackDataPath);
                                 break;
                             }
                         case ('5'):
@@ -93,12 +95,40 @@ namespace Capstone_Project_Starting
         /// </summary>
         /// <param name="precludingSymbol">Put in a single symbol, typically what you want the user to type in. Ie A, 1, etc...</param>
         /// <param name="line">A description of what typing the prevbious symbol will do.</param>
-        private static void MenuLine(string precludingSymbol, string line)
+        private static void MainMenuLine(string precludingSymbol, string line)
         {
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.Write($"[{precludingSymbol}] ");
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine(line);
+        }
+
+        private static void WordPackMenuLine(string precludingNumber, string packName, string wordPackDataPath)
+        {
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.Write($"[{precludingNumber}] ");
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.Write(packName);
+            try
+            {
+                string onOrOff = File.ReadLines(wordPackDataPath).Skip(Int32.Parse(precludingNumber) - 1).Take(1).First();
+                if (onOrOff.Contains("1"))
+                {
+                    Console.ForegroundColor = ConsoleColor.Cyan;
+                    Console.WriteLine($"  [On] ");
+                    Console.ForegroundColor = ConsoleColor.White;
+                }
+                else if (onOrOff.Contains("0"))
+                {
+                    Console.ForegroundColor = ConsoleColor.Cyan;
+                    Console.WriteLine($"  [Off] ");
+                    Console.ForegroundColor = ConsoleColor.White;
+                }
+            }
+            catch
+            {
+
+            }
         }
 
         /// <summary>
@@ -107,7 +137,7 @@ namespace Capstone_Project_Starting
         /// <param name="customWordDataPath"></param>
         /// <param name="hiddenWords"></param>
         /// <param name="alphabet"></param>
-        private static void HangmanWordIntializer(string customWordDataPath, List<string> hiddenWords, List<char> alphabet )
+        private static void HangmanWordIntializer(string customWordDataPath, string wordPackDataPath, List<string> hiddenWords, List<char> alphabet)
         {
             bool customWordErrorOccured = ReadWordsFromFile(customWordDataPath, hiddenWords);
 
@@ -121,6 +151,61 @@ namespace Capstone_Project_Starting
                 Console.WriteLine($"Please make sure that the WordList file is in {customWordDataPath}");
                 Console.WriteLine("If it is there, please also make sure that any custom words are only using letters.");
                 DisplayContinuePrompt();
+            }
+
+            //
+            //Adds a word list to the file, if it is on.
+            //
+            string[] WordPacksInformation = File.ReadAllLines(wordPackDataPath);
+            int currentLine = 1;
+
+            foreach (string line in WordPacksInformation)
+            {
+                if (line.Contains("1"))
+                {
+                    switch (currentLine)
+                    {
+                        case (1):
+                            {
+                                break;
+                            }
+                        case (2):
+                            {
+                                break;
+                            }
+                        case (3):
+                            {
+                                break;
+                            }
+                        case (4):
+                            {
+                                break;
+                            }
+                        case (5):
+                            {
+                                break;
+                            }
+                        case (6):
+                            {
+                                break;
+                            }
+                        case (7):
+                            {
+                                break;
+                            }
+                        case (8):
+                            {
+                                break;
+                            }
+                        case (9):
+                            {
+                                break;
+                            }
+                        default:
+                            break;
+                    }
+                }
+                currentLine++;
             }
 
             //
@@ -152,7 +237,7 @@ namespace Capstone_Project_Starting
         /// <summary>
         /// Plays a game of hangman
         /// </summary>
-        private static bool Hangman(string customWordDataPath)
+        private static bool Hangman(string customWordDataPath, string wordPackDataPath)
         {
             //
             //
@@ -162,7 +247,7 @@ namespace Capstone_Project_Starting
             //"hiddenCharacters" is the hidden word converted into an array of characters, to be compared to changingWord
             //"hiddenWord" is the list of all the hangman words -  basic list in case WordList ever gets deleted
             //
-            List<string> hiddenWords = new List<string>(){};
+            List<string> hiddenWords = new List<string>() { };
             char[] hiddenCharacters;
             char userConvertedResponse;
             bool validUserInput;
@@ -180,7 +265,7 @@ namespace Capstone_Project_Starting
             // Updates and Initializes the hiddenWords list from any word packs and any custom words
             // Also gives the user any error information, incase any dataPaths cannot be reached or other reasons
             //
-            HangmanWordIntializer(customWordDataPath, hiddenWords, alphabet);
+            HangmanWordIntializer(customWordDataPath, wordPackDataPath, hiddenWords, alphabet);
 
             //
             // Initializes the hidden word, by checking all the user inputted words then randomly picking one from the list
@@ -355,12 +440,114 @@ namespace Capstone_Project_Starting
         }
 
         /// <summary>
-        /// Adds in any word packs that the user adds in
+        /// Shows the screen where users can add to word packs
+        /// </summary>
+        private static void DisplayAddWordPacks(string wordPackDataPath)
+        {
+            //
+            // variable declaration
+            //
+            bool exittoMenu = false;
+            char userConvertedResponse;
+            bool validResponse;
+
+            do
+            {
+
+                DisplayScreenHeader("Word Packs");
+
+                WordPackMenuLine("1", "Food Word Pack (20 Words)", wordPackDataPath);
+                WordPackMenuLine("2", "Gem Word Pack (20 Words)", wordPackDataPath);
+                WordPackMenuLine("3", "Not Implemented", wordPackDataPath);
+                WordPackMenuLine("4", "Not Implemented", wordPackDataPath);
+                WordPackMenuLine("5", "Not Implemented", wordPackDataPath);
+                WordPackMenuLine("6", "Not Implemented", wordPackDataPath);
+                WordPackMenuLine("7", "Not Implemented", wordPackDataPath);
+                WordPackMenuLine("8", "Not Implemented", wordPackDataPath);
+                WordPackMenuLine("9", "Not Implemented", wordPackDataPath);
+                MainMenuLine("0", "Exit to Menu");
+                do
+                {
+
+                    ConsoleKeyInfo userInput = Console.ReadKey();
+                    userConvertedResponse = char.Parse(userInput.KeyChar.ToString().ToLower());
+                    validResponse = true;
+                    switch (userConvertedResponse)
+                    {
+                        case ('1'):
+                            {
+                                string onOrOff = File.ReadLines(wordPackDataPath).Skip(0).Take(1).First();
+                                string[] previousFile = File.ReadAllLines(wordPackDataPath);
+                                if (onOrOff.Contains("0"))
+                                {  try
+                                    {
+                                        previousFile[0] = "FoodPack: 1";
+                                        File.WriteAllLines(wordPackDataPath, previousFile);
+                                    }
+                                    catch
+                                    {
+
+                                    }
+                                }
+                                else
+                                {
+                                    try
+                                    {
+                                        previousFile[0] = "FoodPack: 0";
+                                        File.WriteAllLines(wordPackDataPath, previousFile);
+                                    }
+                                    catch
+                                    {
+
+                                    }
+                                }
+                                break;
+                            }
+                        case ('2'):
+                            {
+                                string line = File.ReadLines(wordPackDataPath).Skip(1).Take(1).First();
+                                break;
+                            }
+                        case ('3'):
+                            {
+
+                                break;
+                            }
+                        case ('4'):
+                            {
+                                break;
+                            }
+                        case ('5'):
+                            {
+                                break;
+                            }
+                        case ('0'):
+                            {
+                                exittoMenu = true;
+                                break; 
+                            }
+                        default:
+                            {
+                                Console.WriteLine(" Invalid choice. Please select a number 1-9");
+                                validResponse = false;
+                                break;
+                            }
+                    }
+                } while (!validResponse);
+            } while (!exittoMenu);
+        }
+
+        /// <summary>
+        /// Adds in words in the word packs
+        /// All the word pack contents rest within this method
         /// </summary>
         /// <param name="hiddenWords"></param>
-        private static void HangmanWordPacks(List<string> hiddenWords)
+        private static void HangmanWordPacks(List<string> hiddenWords, int currentLine)
         {
-
+            switch (switch_on)
+            {
+                default:
+            }
         }
 
         /// <summary>
