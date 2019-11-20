@@ -355,6 +355,15 @@ namespace Capstone_Project_Starting
         }
 
         /// <summary>
+        /// Adds in any word packs that the user adds in
+        /// </summary>
+        /// <param name="hiddenWords"></param>
+        private static void HangmanWordPacks(List<string> hiddenWords)
+        {
+
+        }
+
+        /// <summary>
         /// Sends back a random number between the given lower bound and the upper bound.
         /// </summary>
         /// <param name="lowerBound"></param>
