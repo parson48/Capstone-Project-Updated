@@ -500,16 +500,17 @@ namespace Capstone_Project_Starting
 
                     DisplayScreenHeader("Word Packs");
 
-                    WordPackMenuLine("1", "Vegetable Word Pack (10 Words)", wordPackDataPath);
-                    WordPackMenuLine("2", "Gem Word Pack (20 Words)", wordPackDataPath);
+                    WordPackMenuLine("1", "Vegetable Pack (10 Words)", wordPackDataPath);
+                    WordPackMenuLine("2", "Gem Pack (20 Words)", wordPackDataPath);
                     WordPackMenuLine("3", "Not Implemented", wordPackDataPath);
                     WordPackMenuLine("4", "Not Implemented", wordPackDataPath);
                     WordPackMenuLine("5", "Not Implemented", wordPackDataPath);
                     WordPackMenuLine("6", "Not Implemented", wordPackDataPath);
-                    WordPackMenuLine("7", "Not Implemented", wordPackDataPath);
-                    WordPackMenuLine("8", "Not Implemented", wordPackDataPath);
-                    WordPackMenuLine("9", "Not Implemented", wordPackDataPath);
-                    MainMenuLine("0", "Exit to Menu");
+                    WordPackMenuLine("7", "'Word of the Day' Pack A (20 Words)", wordPackDataPath);
+                    WordPackMenuLine("8", "'Word of the Day' Pack B (20 Words)", wordPackDataPath);
+                    WordPackMenuLine("9", "'Word of the Day' Pack C (20 Words)", wordPackDataPath);
+                    WordPackMenuLine("0", "Long Medical Words Pack (20 Words)", wordPackDataPath);
+                    MainMenuLine("~", "Exit to Menu");
                     do
                     {
 
@@ -569,14 +570,34 @@ namespace Capstone_Project_Starting
                                 {
                                     break;
                                 }
+                            case ('6'):
+                                {
+                                    break;
+                                }
+                            case ('7'):
+                                {
+                                    break;
+                                }
+                            case ('8'):
+                                {
+                                    break;
+                                }
+                            case ('9'):
+                                {
+                                    break;
+                                }
                             case ('0'):
+                                {
+                                    break;
+                                }
+                            case ('~'):
                                 {
                                     exittoMenu = true;
                                     break;
                                 }
                             default:
                                 {
-                                    Console.WriteLine(" Invalid choice. Please select a number 1-9");
+                                    Console.WriteLine(" Invalid choice. Please select a number 1-0 or ~");
                                     validResponse = false;
                                     break;
                                 }
@@ -659,6 +680,18 @@ namespace Capstone_Project_Starting
                         break;
                     }
                 case (7):
+                    {
+                        break;
+                    }
+                case (8):
+                    {
+                        break;
+                    }
+                case (9):
+                    {
+                        break;
+                    }
+                case (0):
                     {
                         break;
                     }
