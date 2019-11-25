@@ -13,7 +13,9 @@ namespace Capstone_Project_Starting
         {
             //CURRENT PROBLEMS
 
-            //If user enters with no words in word list, tells them multiple times
+            //Currently no way to remedy files not existing
+            //All word packs other than the veggie pack and gem pack do not exists
+            //FOrmatting is probably inconsistant
                                                   
             string customWordDataPath = @"HangmanInfo\WordList.txt";
             string wordPackDataPath = @"HangmanInfo\WordPacks.txt";
@@ -30,7 +32,6 @@ namespace Capstone_Project_Starting
             bool exitApplication = false;
             char userConvertedResponse;
             bool validResponse;
-            bool userDoneWithHangman = false;
 
             do
             {
@@ -38,10 +39,11 @@ namespace Capstone_Project_Starting
                 DisplayScreenHeader("Application Menu");
 
                 MainMenuLine("1", "Play Hangman");
-                MainMenuLine("2", "Add Custom Words");
-                MainMenuLine("3", "Delete Words");
-                MainMenuLine("4", "Add/Remove Word Packs");
-                MainMenuLine("5", "Quit Application");
+                MainMenuLine("2", "How to Play");
+                MainMenuLine("3", "Add Custom Words");
+                MainMenuLine("4", "Delete Words");
+                MainMenuLine("5", "Add/Remove Word Packs");
+                MainMenuLine("6", "Quit Application");
                 do
                 {
 
@@ -52,11 +54,7 @@ namespace Capstone_Project_Starting
                     {
                         case ('1'):
                             {
-                                do
-                                {
-                                    userDoneWithHangman = Hangman(customWordDataPath, wordPackDataPath);
-                                } while (!userDoneWithHangman);
-
+                                Hangman(customWordDataPath, wordPackDataPath);
                                 break;
                             }
                         case ('2'):
@@ -71,10 +69,15 @@ namespace Capstone_Project_Starting
                             }
                         case ('4'):
                             {
-                                DisplayAddWordPacks(wordPackDataPath);
+
                                 break;
                             }
                         case ('5'):
+                            {
+                                DisplayAddWordPacks(wordPackDataPath);
+                                break;
+                            }
+                        case ('6'):
                             {
                                 exitApplication = true;
                                 Console.WriteLine();
@@ -84,7 +87,7 @@ namespace Capstone_Project_Starting
                             }
                         default:
                             {
-                                Console.WriteLine(" Invalid choice. Please select a number 1-X");
+                                Console.WriteLine(" Invalid choice. Please select a number 1-6");
                                 validResponse = false;
                                 break;
                             }
@@ -107,6 +110,12 @@ namespace Capstone_Project_Starting
             Console.WriteLine(line);
         }
 
+        /// <summary>
+        /// Makes a line for the word pack menu, similar to the MainMenuLine, but adding in the status of it being on or off
+        /// </summary>
+        /// <param name="precludingNumber"></param>
+        /// <param name="packName"></param>
+        /// <param name="wordPackDataPath"></param>
         private static void WordPackMenuLine(string precludingNumber, string packName, string wordPackDataPath)
         {
             Console.ForegroundColor = ConsoleColor.Cyan;
@@ -128,6 +137,12 @@ namespace Capstone_Project_Starting
                     Console.WriteLine($"  [Off] ");
                     Console.ForegroundColor = ConsoleColor.White;
                 }
+                else
+                {
+                    Console.ForegroundColor = ConsoleColor.Cyan;
+                    Console.WriteLine($"  [ERROR] - click this optiom to attempt to fix it.");
+                    Console.ForegroundColor = ConsoleColor.White;
+                }
             }
             catch
             {
@@ -145,26 +160,10 @@ namespace Capstone_Project_Starting
         /// <param name="alphabet"></param>
         private static void HangmanWordIntializer(string customWordDataPath, string wordPackDataPath, List<string> hiddenWords, List<char> alphabet)
         {
-            
-
             //
             // Empties out the hidden words list, can be replaced if wish to have it check to make sure there isn't duplicate words.
             //
             hiddenWords.Clear();
-
-            bool customWordErrorOccured = ReadWordsFromFile(customWordDataPath, hiddenWords);
-
-            //
-            // Gives the user a heads up if the custom words aren't included.
-            //
-            if (customWordErrorOccured == true)
-            {
-                DisplayScreenHeader("Hangman");
-                Console.WriteLine("There has been an error obtaining the custom words");
-                Console.WriteLine($"Please make sure that the WordList file is in {customWordDataPath}");
-                Console.WriteLine("If it is there, please also make sure that any custom words are only using letters.");
-                DisplayContinuePrompt();
-            }
 
             //
             //Adds a word list to the file, if it is on.
@@ -230,6 +229,20 @@ namespace Capstone_Project_Starting
                 currentLine++;
             }
 
+            bool customWordErrorOccured = ReadWordsFromFile(customWordDataPath, hiddenWords);
+
+            //
+            // Gives the user a heads up if the custom words aren't included.
+            //
+            if (customWordErrorOccured == true)
+            {
+                DisplayScreenHeader("Hangman");
+                Console.WriteLine("There has been an error obtaining the custom words");
+                Console.WriteLine($"Please make sure that the WordList file is in {customWordDataPath}");
+                Console.WriteLine("If it is there, please also make sure that any custom words are only using letters.");
+                DisplayContinuePrompt();
+            }
+
             //
             // Produces words if none can be pulled from other sources
             //
@@ -259,7 +272,7 @@ namespace Capstone_Project_Starting
         /// <summary>
         /// Plays a game of hangman
         /// </summary>
-        private static bool Hangman(string customWordDataPath, string wordPackDataPath)
+        private static void Hangman(string customWordDataPath, string wordPackDataPath)
         {
             //
             //
@@ -289,176 +302,183 @@ namespace Capstone_Project_Starting
             //
             HangmanWordIntializer(customWordDataPath, wordPackDataPath, hiddenWords, alphabet);
 
-            //
-            // Initializes the hidden word, by checking all the user inputted words then randomly picking one from the list
-            //
-            int randomNumber = RandomNumber(0, hiddenWords.Count);
-            char[] changingWord = new char[hiddenWords[randomNumber].Length];
-
-            // Writes down the hidden word, used only for testing
-            //WriteLine("{0}", hiddenWords[randomNumber]);
-
-            //
-            //Makes the "hiddenCharacters" array into the hidden word
-            //
-            hiddenCharacters = hiddenWords[randomNumber].ToCharArray(0, hiddenWords[randomNumber].Length);
-
-
-
-            DisplayScreenHeader("Hangman");
-
-            //
-            //Writes out asterisks for each letter in the hidden word.
-            //
-            Console.WriteLine();
-            Console.Write("Word: ");
-            for (int i = 0; i < hiddenWords[randomNumber].Length; i++)
-            {
-                changingWord[i] = '*';
-                Console.Write($"{changingWord[i]}");
-            }
-            Console.WriteLine();
-            Console.WriteLine();
-
-            //
-            //The loop that does it all. If all the asterisks are removed, or when the user presses '~' exits the loop
-            //
             do
             {
-                //
-                // Reads the user's input of a letter.
-                //
+                userPickedCharacters.Clear();
+                completedWord = false;
                 letterInWord = false;
-                Console.Write("Guess a letter >> ");
-                //
-                // Temporary gives the cursors position, so that displaying the picked letters does not disturb the rest of the layout
-                //
-                int tempTopCursorPositionGuess = Console.CursorTop;
-                int tempLeftCursorPositionGuess = Console.CursorLeft;
-                do
-                {
-                    validUserInput = false;
-                    ConsoleKeyInfo userInput = Console.ReadKey();
-                    userConvertedResponse = char.Parse(userInput.KeyChar.ToString().ToLower());
 
-                    //
-                    // Validation - making sure that the user input is either a letter A-Z or ~ (the exit key)
-                    // Pressing ~ exits to the main menu
-                    //
-                    if (userConvertedResponse == '~')
-                    {
-                        Console.WriteLine();
-                        Console.WriteLine("Exiting hangman!");
-                        userDoneWithHangman = true;
-                        validUserInput = true;
-                        DisplayContinuePrompt();
-                    }
-                    else
-                    {
-                        userDoneWithHangman = false;
-                        foreach (char letter in alphabet)
-                        {
-                            if (letter == userConvertedResponse)
-                            {
-                                validUserInput = true;
-                            }
-                        }
-                        if (!validUserInput)
-                        {
-                            Console.WriteLine();
-                            Console.WriteLine("Please Input a valid letter A-Z.");
-                            Console.SetCursorPosition(tempLeftCursorPositionGuess, tempTopCursorPositionGuess);
-                        }
-                    }
 
-                } while (!validUserInput);
+                //
+                // Initializes the hidden word, by checking all the user inputted words then randomly picking one from the list
+                //
+                int randomNumber = RandomNumber(0, hiddenWords.Count);
+                char[] changingWord = new char[hiddenWords[randomNumber].Length];
+
+                // Writes down the hidden word, used only for testing
+                //WriteLine("{0}", hiddenWords[randomNumber]);
+
+                //
+                //Makes the "hiddenCharacters" array into the hidden word
+                //
+                hiddenCharacters = hiddenWords[randomNumber].ToCharArray(0, hiddenWords[randomNumber].Length);
 
 
 
                 DisplayScreenHeader("Hangman");
 
                 //
-                //Checks every letter to see if it is equal to the user input.
-                //If it is equal, sets the letter from an asterisk to the correct letter
+                //Writes out asterisks for each letter in the hidden word.
                 //
-                hiddenCharactersPlacement = 0;
-                foreach (char c in hiddenCharacters)
-                {
-                    if (c == userConvertedResponse)
-                    {
-                        letterInWord = true;
-                        changingWord[hiddenCharactersPlacement] = c;
-                    }
-                    hiddenCharactersPlacement = hiddenCharactersPlacement + 1;
-                }
-
-                userPickedCharacters.Add(userConvertedResponse);
-
-                //
-                //Says if the letter is in the word or not.
-                //
-                if (letterInWord == true)
-                {
-                    Console.WriteLine();
-                    Console.WriteLine("Yes! {0} is in the word.", userConvertedResponse);
-                }
-                else
-                {
-                    Console.WriteLine();
-                    Console.WriteLine("Sorry. {0} is not in the word.", userConvertedResponse);
-                }
-
-                //
-                //Displays the current progress on the hidden word    
-                //
+                Console.WriteLine();
+                Console.WriteLine();
                 Console.Write("Word: ");
                 for (int i = 0; i < hiddenWords[randomNumber].Length; i++)
                 {
+                    changingWord[i] = '*';
                     Console.Write($"{changingWord[i]}");
                 }
                 Console.WriteLine();
                 Console.WriteLine();
 
                 //
-                // Temporary gives the cursors position, so that displaying the picked letters does not disturb the rest of the layout
+                //The loop that does it all. If all the asterisks are removed, or when the user presses '~' exits the loop
                 //
-                int tempTopCursorPosition = Console.CursorTop;
-                int tempLeftCursorPosition = Console.CursorLeft;
-
-                PickedLetterDisplay(alphabet, userPickedCharacters, tempLeftCursorPosition, tempTopCursorPosition);
-                //
-                // If all the asterisks are revealed, and thus all the letters have been guessed, it exits the loop.
-                //
-                completedCharacter = 0;
-                foreach (char c in changingWord)
+                do
                 {
-                    if (c == '*')
+                    //
+                    // Reads the user's input of a letter.
+                    //
+                    letterInWord = false;
+                    Console.Write("Guess a letter >> ");
+                    //
+                    // Temporary gives the cursors position, so that displaying the picked letters does not disturb the rest of the layout
+                    //
+                    int tempTopCursorPositionGuess = Console.CursorTop;
+                    int tempLeftCursorPositionGuess = Console.CursorLeft;
+                    do
                     {
-                        completedCharacter = completedCharacter + 1;
+                        validUserInput = false;
+                        ConsoleKeyInfo userInput = Console.ReadKey();
+                        userConvertedResponse = char.Parse(userInput.KeyChar.ToString().ToLower());
+
+                        //
+                        // Validation - making sure that the user input is either a letter A-Z or ~ (the exit key)
+                        // Pressing ~ exits to the main menu
+                        //
+                        if (userConvertedResponse == '~')
+                        {
+                            Console.WriteLine();
+                            Console.WriteLine("Exiting hangman!");
+                            userDoneWithHangman = true;
+                            validUserInput = true;
+                            DisplayContinuePrompt();
+                        }
+                        else
+                        {
+                            userDoneWithHangman = false;
+                            foreach (char letter in alphabet)
+                            {
+                                if (letter == userConvertedResponse)
+                                {
+                                    validUserInput = true;
+                                }
+                            }
+                            if (!validUserInput)
+                            {
+                                Console.WriteLine();
+                                Console.WriteLine("Please Input a valid letter A-Z.");
+                                Console.SetCursorPosition(tempLeftCursorPositionGuess, tempTopCursorPositionGuess);
+                            }
+                        }
+
+                    } while (!validUserInput);
+
+
+
+                    DisplayScreenHeader("Hangman");
+
+                    //
+                    //Checks every letter to see if it is equal to the user input.
+                    //If it is equal, sets the letter from an asterisk to the correct letter
+                    //
+                    hiddenCharactersPlacement = 0;
+                    foreach (char c in hiddenCharacters)
+                    {
+                        if (c == userConvertedResponse)
+                        {
+                            letterInWord = true;
+                            changingWord[hiddenCharactersPlacement] = c;
+                        }
+                        hiddenCharactersPlacement = hiddenCharactersPlacement + 1;
+                    }
+
+                    userPickedCharacters.Add(userConvertedResponse);
+
+                    //
+                    //Says if the letter is in the word or not.
+                    //
+                    if (letterInWord == true)
+                    {
+                        Console.WriteLine();
+                        Console.WriteLine("Yes! {0} is in the word.", userConvertedResponse);
                     }
                     else
                     {
-                        completedCharacter = completedCharacter + 0;
+                        Console.WriteLine();
+                        Console.WriteLine("Sorry. {0} is not in the word.", userConvertedResponse);
                     }
-                }
-                if (completedCharacter == 0)
+
+                    //
+                    //Displays the current progress on the hidden word    
+                    //
+                    Console.Write("Word: ");
+                    for (int i = 0; i < hiddenWords[randomNumber].Length; i++)
+                    {
+                        Console.Write($"{changingWord[i]}");
+                    }
+                    Console.WriteLine();
+                    Console.WriteLine();
+
+                    //
+                    // Temporary gives the cursors position, so that displaying the picked letters does not disturb the rest of the layout
+                    //
+                    int tempTopCursorPosition = Console.CursorTop;
+                    int tempLeftCursorPosition = Console.CursorLeft;
+
+                    PickedLetterDisplay(alphabet, userPickedCharacters, tempLeftCursorPosition, tempTopCursorPosition);
+                    //
+                    // If all the asterisks are revealed, and thus all the letters have been guessed, it exits the loop.
+                    //
+                    completedCharacter = 0;
+                    foreach (char c in changingWord)
+                    {
+                        if (c == '*')
+                        {
+                            completedCharacter = completedCharacter + 1;
+                        }
+                        else
+                        {
+                            completedCharacter = completedCharacter + 0;
+                        }
+                    }
+                    if (completedCharacter == 0)
+                    {
+                        completedWord = true;
+                    }
+                    else { }
+                } while (!completedWord && !userDoneWithHangman);
+
+                if (completedWord)
                 {
-                    completedWord = true;
+                    //
+                    //Congratulates the user
+                    //
+                    Console.WriteLine("Good job on guessing the hidden word!");
+                    Console.WriteLine($"The hidden word was {hiddenWords[randomNumber]}.");
+                    Console.ReadKey();
                 }
-                else { }
-            } while (!completedWord && !userDoneWithHangman);
-
-            if (completedWord)
-            {
-                //
-                //Congratulates the user
-                //
-                Console.WriteLine("Good job on guessing the hidden word!");
-                Console.WriteLine($"The hidden word was {hiddenWords[randomNumber]}.");
-                Console.ReadKey();
-            }
-
-            return userDoneWithHangman;
+            } while (userDoneWithHangman == false);
         }
 
         /// <summary>
@@ -474,7 +494,7 @@ namespace Capstone_Project_Starting
             bool validResponse;
             try
             {
-                File.ReadLines(wordPackDataPath);
+                File.ReadAllLines(wordPackDataPath);
                 do
                 {
 
@@ -502,35 +522,38 @@ namespace Capstone_Project_Starting
                                 {
                                     string onOrOff = File.ReadLines(wordPackDataPath).Skip(0).Take(1).First();
                                     string[] previousFile = File.ReadAllLines(wordPackDataPath);
+
                                     if (onOrOff.Contains("0"))
                                     {
-                                        try
-                                        {
-                                            previousFile[0] = "VeggiePack: 1";
-                                            File.WriteAllLines(wordPackDataPath, previousFile);
-                                        }
-                                        catch
-                                        {
 
-                                        }
+                                        previousFile[0] = "VeggiePack: 1";
+                                        File.WriteAllLines(wordPackDataPath, previousFile);
+
                                     }
                                     else
                                     {
-                                        try
-                                        {
-                                            previousFile[0] = "VeggiePack: 0";
-                                            File.WriteAllLines(wordPackDataPath, previousFile);
-                                        }
-                                        catch
-                                        {
-
-                                        }
+                                        previousFile[0] = "VeggiePack: 0";
+                                        File.WriteAllLines(wordPackDataPath, previousFile);
                                     }
                                     break;
                                 }
                             case ('2'):
                                 {
-                                    string line = File.ReadLines(wordPackDataPath).Skip(1).Take(1).First();
+                                    string onOrOff = File.ReadLines(wordPackDataPath).Skip(1).Take(1).First();
+                                    string[] previousFile = File.ReadAllLines(wordPackDataPath);
+
+                                    if (onOrOff.Contains("0"))
+                                    {
+
+                                        previousFile[1] = "GemPack: 1";
+                                        File.WriteAllLines(wordPackDataPath, previousFile);
+
+                                    }
+                                    else
+                                    {
+                                        previousFile[1] = "GemPack: 0";
+                                        File.WriteAllLines(wordPackDataPath, previousFile);
+                                    }
                                     break;
                                 }
                             case ('3'):
@@ -566,8 +589,9 @@ namespace Capstone_Project_Starting
                 DisplayScreenHeader("Word Packs");
 
                 Console.WriteLine("Error!");
-                Console.WriteLine("The program cannot reach the word packs file at HangmanInfo/WordPacks.txt");
+                Console.WriteLine($"The program cannot reach the word packs file at {wordPackDataPath}");
                 Console.WriteLine("Please try making sure the file exists");
+                DisplayContinuePrompt();
             }
         }
 
@@ -596,6 +620,26 @@ namespace Capstone_Project_Starting
                 }
                 case (2):
                 {
+                        hiddenWords.Add("chrysolite");
+                        hiddenWords.Add("sapphire");
+                        hiddenWords.Add("garnet");
+                        hiddenWords.Add("pearl");
+                        hiddenWords.Add("tanzanite");
+                        hiddenWords.Add("topaz");
+                        hiddenWords.Add("amethyst");
+                        hiddenWords.Add("spinel");
+                        hiddenWords.Add("aquamarine");
+                        hiddenWords.Add("ruby");
+                        hiddenWords.Add("citrine");
+                        hiddenWords.Add("diamond");
+                        hiddenWords.Add("emerald");
+                        hiddenWords.Add("kunzite");
+                        hiddenWords.Add("opal");
+                        hiddenWords.Add("zircon");
+                        hiddenWords.Add("peridot");
+                        hiddenWords.Add("sardonyx");
+                        hiddenWords.Add("jasper");
+                        hiddenWords.Add("carnelian");
                         break;
                 }
                 case (3):
@@ -767,13 +811,13 @@ namespace Capstone_Project_Starting
         /// </summary>
         /// <param name="dataPath"></param>
         /// <param name="hiddenWord"></param>
-        private static bool ReadWordsFromFile(string dataPath, List<string> hiddenWord)
+        private static bool ReadWordsFromFile(string customDataPath, List<string> hiddenWord)
         {
             bool errorOccured = false;
             
             try
             {
-                string[] listOfWords = File.ReadAllLines(dataPath);
+                string[] listOfWords = File.ReadAllLines(customDataPath);
 
                 for (int i = 0; i < listOfWords.Length; i++)
                     listOfWords[i] = listOfWords[i].ToLower();
