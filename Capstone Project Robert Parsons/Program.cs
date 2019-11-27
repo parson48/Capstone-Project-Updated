@@ -16,6 +16,7 @@ namespace Capstone_Project_Starting
             //Currently no way to remedy files not existing
             //All word packs other than the veggie pack and gem pack do not exists
             //FOrmatting is probably inconsistant
+            //Adding custom words has not been implemented
                                                   
             string customWordDataPath = @"HangmanInfo\WordList.txt";
             string wordPackDataPath = @"HangmanInfo\WordPacks.txt";
@@ -32,6 +33,12 @@ namespace Capstone_Project_Starting
             bool exitApplication = false;
             char userConvertedResponse;
             bool validResponse;
+
+            //
+            // Creates a list with all the letters of the alphabet, used to double check that words and inputs use only letters
+            //
+            List<char> alphabet = new List<char>();
+            AlphabetCreation(alphabet);
 
             do
             {
@@ -54,7 +61,7 @@ namespace Capstone_Project_Starting
                     {
                         case ('1'):
                             {
-                                Hangman(customWordDataPath, wordPackDataPath);
+                                Hangman(customWordDataPath, wordPackDataPath, alphabet);
                                 break;
                             }
                         case ('2'):
@@ -64,12 +71,13 @@ namespace Capstone_Project_Starting
                             }
                         case ('3'):
                             {
+                                DisplayAddCustomWords(customWordDataPath, alphabet);
 
                                 break;
                             }
                         case ('4'):
                             {
-
+                                DisplayRemoveCustomWords(customWordDataPath, alphabet);
                                 break;
                             }
                         case ('5'):
@@ -96,6 +104,8 @@ namespace Capstone_Project_Starting
             } while (!exitApplication);
 
         }
+
+
 
         /// <summary>
         /// Makes a line of the menu, coloring in the first part cyan and the second part white. 
@@ -146,9 +156,28 @@ namespace Capstone_Project_Starting
             }
             catch
             {
-                Console.ForegroundColor = ConsoleColor.Cyan;
-                Console.WriteLine($"  [ERROR] ");
-                Console.ForegroundColor = ConsoleColor.White;
+                if (precludingNumber == "0")
+                {
+                    string onOrOff = File.ReadLines(wordPackDataPath).Skip(9).Take(1).First();
+                    if (onOrOff.Contains("1"))
+                    {
+                        Console.ForegroundColor = ConsoleColor.Cyan;
+                        Console.WriteLine($"  [On] ");
+                        Console.ForegroundColor = ConsoleColor.White;
+                    }
+                    else if (onOrOff.Contains("0"))
+                    {
+                        Console.ForegroundColor = ConsoleColor.Cyan;
+                        Console.WriteLine($"  [Off] ");
+                        Console.ForegroundColor = ConsoleColor.White;
+                    }
+                }
+                else
+                {
+                    Console.ForegroundColor = ConsoleColor.Cyan;
+                    Console.WriteLine($"  [ERROR] ");
+                    Console.ForegroundColor = ConsoleColor.White;
+                }
             }
         }
 
@@ -272,7 +301,7 @@ namespace Capstone_Project_Starting
         /// <summary>
         /// Plays a game of hangman
         /// </summary>
-        private static void Hangman(string customWordDataPath, string wordPackDataPath)
+        private static void Hangman(string customWordDataPath, string wordPackDataPath, List<char> alphabet)
         {
             //
             //
@@ -291,10 +320,7 @@ namespace Capstone_Project_Starting
             int completedCharacter;
             int hiddenCharactersPlacement;
             List<char> userPickedCharacters = new List<char>();
-            List<char> alphabet = new List<char>();
             bool userDoneWithHangman;
-
-            AlphabetCreation(alphabet);
 
             //
             // Updates and Initializes the hiddenWords list from any word packs and any custom words
@@ -500,16 +526,17 @@ namespace Capstone_Project_Starting
 
                     DisplayScreenHeader("Word Packs");
 
+                    WordPackMenuLine("0", "Fruit Pack (20 Words)", wordPackDataPath);
                     WordPackMenuLine("1", "Vegetable Pack (10 Words)", wordPackDataPath);
                     WordPackMenuLine("2", "Gem Pack (20 Words)", wordPackDataPath);
-                    WordPackMenuLine("3", "Not Implemented", wordPackDataPath);
+                    WordPackMenuLine("3", "Mountain Moons Pack (20 Words)", wordPackDataPath);
                     WordPackMenuLine("4", "Not Implemented", wordPackDataPath);
                     WordPackMenuLine("5", "Not Implemented", wordPackDataPath);
                     WordPackMenuLine("6", "Not Implemented", wordPackDataPath);
-                    WordPackMenuLine("7", "'Word of the Day' Pack A (20 Words)", wordPackDataPath);
-                    WordPackMenuLine("8", "'Word of the Day' Pack B (20 Words)", wordPackDataPath);
-                    WordPackMenuLine("9", "'Word of the Day' Pack C (20 Words)", wordPackDataPath);
-                    WordPackMenuLine("0", "Long Medical Words Pack (20 Words)", wordPackDataPath);
+                    WordPackMenuLine("7", "NI'Word of the Day' Pack A (20 Words)", wordPackDataPath);
+                    WordPackMenuLine("8", "NI'Word of the Day' Pack B (20 Words)", wordPackDataPath);
+                    WordPackMenuLine("9", "NI'Word of the Day' Pack C (20 Words)", wordPackDataPath);
+
                     MainMenuLine("~", "Exit to Menu");
                     do
                     {
@@ -527,13 +554,13 @@ namespace Capstone_Project_Starting
                                     if (onOrOff.Contains("0"))
                                     {
 
-                                        previousFile[0] = "VeggiePack: 1";
+                                        previousFile[0] = "VegetablePack: 1";
                                         File.WriteAllLines(wordPackDataPath, previousFile);
 
                                     }
                                     else
                                     {
-                                        previousFile[0] = "VeggiePack: 0";
+                                        previousFile[0] = "VegetablePack: 0";
                                         File.WriteAllLines(wordPackDataPath, previousFile);
                                     }
                                     break;
@@ -559,7 +586,21 @@ namespace Capstone_Project_Starting
                                 }
                             case ('3'):
                                 {
+                                    string onOrOff = File.ReadLines(wordPackDataPath).Skip(2).Take(1).First();
+                                    string[] previousFile = File.ReadAllLines(wordPackDataPath);
 
+                                    if (onOrOff.Contains("0"))
+                                    {
+
+                                        previousFile[2] = "MoonMountainPack: 1";
+                                        File.WriteAllLines(wordPackDataPath, previousFile);
+
+                                    }
+                                    else
+                                    {
+                                        previousFile[2] = "MoonMountainPack: 0";
+                                        File.WriteAllLines(wordPackDataPath, previousFile);
+                                    }
                                     break;
                                 }
                             case ('4'):
@@ -588,6 +629,21 @@ namespace Capstone_Project_Starting
                                 }
                             case ('0'):
                                 {
+                                    string onOrOff = File.ReadLines(wordPackDataPath).Skip(9).Take(1).First();
+                                    string[] previousFile = File.ReadAllLines(wordPackDataPath);
+
+                                    if (onOrOff.Contains("0"))
+                                    {
+
+                                        previousFile[9] = "FruitPack: 1";
+                                        File.WriteAllLines(wordPackDataPath, previousFile);
+
+                                    }
+                                    else
+                                    {
+                                        previousFile[9] = "FruitPack: 0";
+                                        File.WriteAllLines(wordPackDataPath, previousFile);
+                                    }
                                     break;
                                 }
                             case ('~'):
@@ -665,6 +721,27 @@ namespace Capstone_Project_Starting
                 }
                 case (3):
                 {
+                        hiddenWords.Add("huygens");
+                        hiddenWords.Add("hadley");
+                        hiddenWords.Add("bradley");
+                        hiddenWords.Add("penck");
+                        hiddenWords.Add("blanc");
+                        hiddenWords.Add("wolff");
+                        hiddenWords.Add("vitruvius");
+                        hiddenWords.Add("piton");
+                        hiddenWords.Add("pico");
+                        hiddenWords.Add("maraldi");
+                        hiddenWords.Add("agnes");
+                        hiddenWords.Add("dilip");
+                        hiddenWords.Add("herodotus");
+                        hiddenWords.Add("ardeshir");
+                        hiddenWords.Add("esam");
+                        hiddenWords.Add("moro");
+                        hiddenWords.Add("usov");
+                        hiddenWords.Add("dieter");
+                        hiddenWords.Add("argaeus");
+                        hiddenWords.Add("hansteen");
+
                         break;
                 }
                 case (4):
@@ -693,6 +770,26 @@ namespace Capstone_Project_Starting
                     }
                 case (0):
                     {
+                        hiddenWords.Add("apple");
+                        hiddenWords.Add("pear");
+                        hiddenWords.Add("orange");
+                        hiddenWords.Add("grapefruit");
+                        hiddenWords.Add("lime");
+                        hiddenWords.Add("nectarines");
+                        hiddenWords.Add("apricot");
+                        hiddenWords.Add("peach");
+                        hiddenWords.Add("plum");
+                        hiddenWords.Add("banana");
+                        hiddenWords.Add("strawberry");
+                        hiddenWords.Add("passionfruit");
+                        hiddenWords.Add("watermelon");
+                        hiddenWords.Add("tomatoe");
+                        hiddenWords.Add("avacado");
+                        hiddenWords.Add("blueberry");
+                        hiddenWords.Add("raspberry");
+                        hiddenWords.Add("kiwi");
+                        hiddenWords.Add("cantaloupe");
+                        hiddenWords.Add("mandarin");
                         break;
                     }
                 default:
@@ -871,6 +968,67 @@ namespace Capstone_Project_Starting
             return errorOccured;
 
 
+
+        }
+
+        private static void DisplayAddCustomWords(string customWordDataPath, List<char> alphabet)
+        {
+            string newWord;
+            bool invalidWord = false;
+            bool exitToMenu = false;
+            DisplayScreenHeader("Adding Custom Words");
+
+            Console.WriteLine("Simply write in any words, using letters a-z, to add the words to the word pack!");
+            Console.WriteLine("Press ~ when you wish to exit to the menu");
+
+            //
+            // Reads the input to add the word.
+            //
+            do
+            {
+                newWord = Console.ReadLine();
+                invalidWord = false;
+
+                if (newWord == "~")
+                {
+                    exitToMenu = true;
+                }
+                else
+                {
+                    foreach (char wordLetter in newWord)
+                    {
+                        if (char.IsLetter)
+                        { 
+                        }
+                    }
+                    if (invalidWord)
+                    {
+                        Console.WriteLine("Invalid word! Please type in a word only with letters of the alphabet.");
+                    }
+                    else
+                    {
+                        try
+                        {
+                            File.AppendAllText(customWordDataPath, newWord);
+                            Console.Write($"  {newWord} added!");
+                            Console.WriteLine();
+                        }
+                        catch
+                        {
+                            Console.WriteLine("Application could not write to to the file.");
+                            Console.WriteLine("Make sure that the application can access the file and try again.");
+                        }
+                    }
+                }
+            } while (!exitToMenu);
+
+            Console.WriteLine("Exiting to the menu!");
+            DisplayContinuePrompt();
+
+        }
+
+        private static void DisplayRemoveCustomWords(string customWordDataPath, List<char> alphabet)
+        {
 
         }
     }
