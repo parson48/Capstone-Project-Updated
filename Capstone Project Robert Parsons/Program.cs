@@ -17,6 +17,7 @@ namespace Capstone_Project_Starting
             //All word packs other than the veggie pack and gem pack do not exists
             //FOrmatting is probably inconsistant
             //Adding custom words has not been implemented
+            //No image for the dang thing
                                                   
             string customWordDataPath = @"HangmanInfo\WordList.txt";
             string wordPackDataPath = @"HangmanInfo\WordPacks.txt";
