@@ -977,6 +977,7 @@ namespace Capstone_Project_Starting
             string newWord;
             bool invalidWord = false;
             bool exitToMenu = false;
+            bool invalidLetter;
             DisplayScreenHeader("Adding Custom Words");
 
             Console.WriteLine("Simply write in any words, using letters a-z, to add the words to the word pack!");
@@ -988,7 +989,7 @@ namespace Capstone_Project_Starting
             do
             {
                 newWord = Console.ReadLine();
-                invalidWord = false;
+                invalidLetter = true;
 
                 if (newWord == "~")
                 {
@@ -998,8 +999,21 @@ namespace Capstone_Project_Starting
                 {
                     foreach (char wordLetter in newWord)
                     {
-                        if (char.IsLetter)
-                        { 
+                        invalidWord = true;
+                        foreach (char letter in alphabet)
+                        {
+                            if (wordLetter == letter)
+                            {
+                                invalidLetter = false;
+                            }
+                            if (!invalidLetter)
+                            {
+                                invalidWord = false;
+                            }
+                        }
+                        if (invalidWord)
+                        {
+                            break;
                         }
                     }
                     if (invalidWord)
