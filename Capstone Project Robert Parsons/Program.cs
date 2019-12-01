@@ -134,9 +134,9 @@ namespace Capstone_Project_Starting
             Console.Write($"[{precludingNumber}] ");
             Console.ForegroundColor = ConsoleColor.White;
             Console.Write(packName);
-            try
+            if (precludingNumber == "0")
             {
-                string onOrOff = File.ReadLines(wordPackDataPath).Skip(Int32.Parse(precludingNumber) - 1).Take(1).First();
+                string onOrOff = File.ReadLines(wordPackDataPath).Skip(9).Take(1).First();
                 if (onOrOff.Contains("1"))
                 {
                     Console.ForegroundColor = ConsoleColor.Cyan;
@@ -149,18 +149,12 @@ namespace Capstone_Project_Starting
                     Console.WriteLine($"  [Off] ");
                     Console.ForegroundColor = ConsoleColor.White;
                 }
-                else
-                {
-                    Console.ForegroundColor = ConsoleColor.Cyan;
-                    Console.WriteLine($"  [ERROR] - click this optiom to attempt to fix it.");
-                    Console.ForegroundColor = ConsoleColor.White;
-                }
             }
-            catch
+            else
             {
-                if (precludingNumber == "0")
+                try
                 {
-                    string onOrOff = File.ReadLines(wordPackDataPath).Skip(9).Take(1).First();
+                    string onOrOff = File.ReadLines(wordPackDataPath).Skip(Int32.Parse(precludingNumber) - 1).Take(1).First();
                     if (onOrOff.Contains("1"))
                     {
                         Console.ForegroundColor = ConsoleColor.Cyan;
@@ -173,14 +167,21 @@ namespace Capstone_Project_Starting
                         Console.WriteLine($"  [Off] ");
                         Console.ForegroundColor = ConsoleColor.White;
                     }
+                    else
+                    {
+                        Console.ForegroundColor = ConsoleColor.Cyan;
+                        Console.WriteLine($"  [ERROR] - click this optiom to attempt to fix it.");
+                        Console.ForegroundColor = ConsoleColor.White;
+                    }
                 }
-                else
+                catch
                 {
-                    Console.ForegroundColor = ConsoleColor.Cyan;
-                    Console.WriteLine($"  [ERROR] ");
-                    Console.ForegroundColor = ConsoleColor.White;
+                        Console.ForegroundColor = ConsoleColor.Cyan;
+                        Console.WriteLine($"  [ERROR] ");
+                        Console.ForegroundColor = ConsoleColor.White;
                 }
             }
+            
         }
 
         /// <summary>
@@ -200,7 +201,7 @@ namespace Capstone_Project_Starting
             //Adds a word list to the file, if it is on.
             //
             string[] WordPacksInformation = File.ReadAllLines(wordPackDataPath);
-            int currentLine = 1;
+            int currentLine = 0;
 
             foreach (string line in WordPacksInformation)
             {
@@ -208,6 +209,11 @@ namespace Capstone_Project_Starting
                 {
                     switch (currentLine)
                     {
+                        case (0):
+                            {
+                                HangmanWordPacks(hiddenWords, currentLine);
+                                break;
+                            }
                         case (1):
                             {
                                 HangmanWordPacks(hiddenWords, currentLine);
