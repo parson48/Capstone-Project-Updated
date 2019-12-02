@@ -24,7 +24,11 @@ namespace Capstone_Project_Starting
             //Currently no way to remedy files not existing
             //FOrmatting is probably inconsistant
             //Removing custom words has not been implemented
-            //No image for the dang thing
+
+            //
+            // Sets the text color to white, because I think it looks better that way.
+            //
+            Console.ForegroundColor = ConsoleColor.White;
 
             string customWordDataPath = @"HangmanInfo\WordList.txt";
             string wordPackDataPath = @"HangmanInfo\WordPacks.txt";
@@ -52,6 +56,9 @@ namespace Capstone_Project_Starting
             List<char> alphabet = new List<char>();
             AlphabetCreation(alphabet);
 
+            //
+            // The menu itself, it will stay within this loop until the user exits the application
+            //
             do
             {
 
@@ -329,12 +336,15 @@ namespace Capstone_Project_Starting
             char[] hiddenCharacters;
             char userConvertedResponse;
             bool validUserInput;
-            bool completedWord = false;
-            bool letterInWord = false;
+            bool completedWord;
+            bool letterInWord;
             int completedCharacter;
             int hiddenCharactersPlacement;
             List<char> userPickedCharacters = new List<char>();
             bool userDoneWithHangman;
+            int incorrectGuesses;
+            bool userLostHangman = false;
+            const int MAX_INCORRECT_GUESSES = 7;
 
             //
             // Updates and Initializes the hiddenWords list from any word packs and any custom words
@@ -344,9 +354,13 @@ namespace Capstone_Project_Starting
 
             do
             {
+                //
+                // Resets the game
+                //
                 userPickedCharacters.Clear();
                 completedWord = false;
                 letterInWord = false;
+                incorrectGuesses = 0;
 
 
                 //
@@ -428,13 +442,19 @@ namespace Capstone_Project_Starting
                             {
                                 Console.WriteLine();
                                 Console.WriteLine("Please Input a valid letter A-Z.");
-                                Console.SetCursorPosition(tempLeftCursorPositionGuess, tempTopCursorPositionGuess);
+                                try
+                                {
+                                    Console.SetCursorPosition(tempLeftCursorPositionGuess, tempTopCursorPositionGuess);
+                                }
+                                catch
+                                {
+                                    Console.Write("Guess a letter >> ");
+                                }
+
                             }
                         }
 
                     } while (!validUserInput);
-
-
 
                     DisplayScreenHeader("Hangman");
 
@@ -453,20 +473,38 @@ namespace Capstone_Project_Starting
                         hiddenCharactersPlacement = hiddenCharactersPlacement + 1;
                     }
 
-                    userPickedCharacters.Add(userConvertedResponse);
-
                     //
-                    //Says if the letter is in the word or not.
+                    // Checks to make sure a letter was not already picked.
+                    // If it was already picked, it tells the user and DOES NOT PENALIZE THE USER
                     //
-                    if (letterInWord == true)
+                    if (userPickedCharacters.Contains(userConvertedResponse))
                     {
                         Console.WriteLine();
-                        Console.WriteLine("Yes! {0} is in the word.", userConvertedResponse);
+                        Console.WriteLine($"{userConvertedResponse} was already guessed.");
                     }
                     else
                     {
-                        Console.WriteLine();
-                        Console.WriteLine("Sorry. {0} is not in the word.", userConvertedResponse);
+                        userPickedCharacters.Add(userConvertedResponse);
+                        //
+                        //Says if the letter is in the word or not.
+                        //
+                        if (letterInWord == true)
+                        {
+                            Console.WriteLine();
+                            Console.WriteLine("Yes! {0} is in the word.", userConvertedResponse);
+                        }
+                        else
+                        {
+                            Console.WriteLine();
+                            Console.WriteLine("Sorry. {0} is not in the word.", userConvertedResponse);
+                            incorrectGuesses++;
+                        }
+                    }
+
+                    if (incorrectGuesses == MAX_INCORRECT_GUESSES)
+                    {
+                        completedWord = true;
+                        userLostHangman = true;
                     }
 
                     //
@@ -487,6 +525,15 @@ namespace Capstone_Project_Starting
                     int tempLeftCursorPosition = Console.CursorLeft;
 
                     PickedLetterDisplay(alphabet, userPickedCharacters, tempLeftCursorPosition, tempTopCursorPosition);
+
+                    //
+                    // Temporary gives the cursors potition, so that displayed the hangman does not disturb the reset of the layout
+                    //
+                    tempTopCursorPosition = Console.CursorTop;
+                    tempLeftCursorPosition = Console.CursorLeft;
+
+                    HangmanGuyDisplay(tempLeftCursorPosition, tempTopCursorPosition, incorrectGuesses);
+
                     //
                     // If all the asterisks are revealed, and thus all the letters have been guessed, it exits the loop.
                     //
@@ -509,12 +556,18 @@ namespace Capstone_Project_Starting
                     else { }
                 } while (!completedWord && !userDoneWithHangman);
 
-                if (completedWord)
+                if (completedWord && !userLostHangman)
                 {
                     //
                     //Congratulates the user
                     //
                     Console.WriteLine("Good job on guessing the hidden word!");
+                    Console.WriteLine($"The hidden word was {hiddenWords[randomNumber]}.");
+                    Console.ReadKey();
+                }
+                if (userLostHangman)
+                {
+                    Console.WriteLine("You did not guess the hidden word in time.");
                     Console.WriteLine($"The hidden word was {hiddenWords[randomNumber]}.");
                     Console.ReadKey();
                 }
@@ -1090,6 +1143,317 @@ namespace Capstone_Project_Starting
         }
 
         /// <summary>
+        /// Shows the hanged man.
+        /// </summary>
+        /// <param name="cursorLeftPosition"></param>
+        /// <param name="cursorTopPosition"></param>
+        /// <param name="incorrectGuesses"></param>
+        private static void HangmanGuyDisplay(int cursorLeftPosition, int cursorTopPosition, int incorrectGuesses)
+        {
+            const int CURSOR_LEFT_BUFFER = 55;
+
+            //
+            // This try makes sure the program does not crash if the window is resized too small.
+            // If the window is too small intially, then it just makes the hangman below the alphabet display (7 below initial position)
+            //
+            try
+            {
+                Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 2);
+                switch (incorrectGuesses)
+                {
+                    case (0):
+                        {
+                            Console.WriteLine(" _____ ");
+                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 3);
+                            Console.WriteLine(" |   | ");
+                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 4);
+                            Console.WriteLine("     | ");
+                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 5);
+                            Console.WriteLine("     | ");
+                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 6);
+                            Console.WriteLine("     | ");
+                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 7);
+                            Console.WriteLine("_____|_");
+                            break;
+                        }
+                    case (1):
+                        {
+                            Console.WriteLine(" _____ ");
+                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 3);
+                            Console.WriteLine(" |   | ");
+                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 4);
+                            Console.WriteLine(" o   | ");
+                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 5);
+                            Console.WriteLine("     | ");
+                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 6);
+                            Console.WriteLine("     | ");
+                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 7);
+                            Console.WriteLine("_____|_");
+                            break;
+                        }
+                    case (2):
+                        {
+                            Console.WriteLine(" _____ ");
+                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 3);
+                            Console.WriteLine(" |   | ");
+                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 4);
+                            Console.WriteLine(" o   | ");
+                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 5);
+                            Console.WriteLine(" |   | ");
+                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 6);
+                            Console.WriteLine("     | ");
+                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 7);
+                            Console.WriteLine("_____|_");
+                            break;
+                        }
+                    case (3):
+                        {
+                            Console.WriteLine(" _____ ");
+                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 3);
+                            Console.WriteLine(" |   | ");
+                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 4);
+                            Console.WriteLine(" o   | ");
+                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 5);
+                            Console.WriteLine("/|   | ");
+                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 6);
+                            Console.WriteLine("     | ");
+                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 7);
+                            Console.WriteLine("_____|_");
+                            break;
+                        }
+                    case (4):
+                        {
+                            Console.WriteLine(" _____ ");
+                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 3);
+                            Console.WriteLine(" |   | ");
+                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 4);
+                            Console.WriteLine(" o   | ");
+                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 5);
+                            Console.WriteLine("/|\\  | ");
+                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 6);
+                            Console.WriteLine("     | ");
+                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 7);
+                            Console.WriteLine("_____|_");
+                            break;
+                        }
+                    case (5):
+                        {
+                            Console.WriteLine(" _____ ");
+                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 3);
+                            Console.WriteLine(" |   | ");
+                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 4);
+                            Console.WriteLine(" o   | ");
+                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 5);
+                            Console.WriteLine("/|\\  | ");
+                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 6);
+                            Console.WriteLine("  \\  | ");
+                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 7);
+                            Console.WriteLine("_____|_");
+                            break;
+                        }
+                    case (6):
+                        {
+                            Console.WriteLine(" _____ ");
+                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 3);
+                            Console.WriteLine(" |   | ");
+                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 4);
+                            Console.WriteLine(" o   | ");
+                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 5);
+                            Console.WriteLine("/|\\  | ");
+                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 6);
+                            Console.WriteLine("/ \\  | ");
+                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 7);
+                            Console.WriteLine("_____|_");
+                            break;
+                        }
+                    case (7):
+                        {
+                            Console.WriteLine(" _____ ");
+                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 3);
+                            Console.WriteLine(" |   | ");
+                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 4);
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.Write(" x  ");
+                            Console.ForegroundColor = ConsoleColor.White;
+                            Console.Write(" | ");
+                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 5);
+                            Console.WriteLine("/|\\  | ");
+                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 6);
+                            Console.WriteLine("/ \\  | ");
+                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 7);
+                            Console.WriteLine("_____|_");
+                            break;
+                        }
+                    default:
+                        {
+                            Console.WriteLine(" _____ ");
+                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 3);
+                            Console.WriteLine(" |   | ");
+                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 4);
+                            Console.WriteLine("     | ");
+                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 5);
+                            Console.WriteLine("     | ");
+                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 6);
+                            Console.WriteLine("     | ");
+                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 7);
+                            Console.WriteLine("_____|_");
+                            break;
+                        }
+                }
+            }
+            catch 
+            {
+                Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 7);
+                switch (incorrectGuesses)
+                {
+                    case (0):
+                        {
+                            Console.WriteLine(" _____ ");
+                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 8);
+                            Console.WriteLine(" |   | ");
+                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 9);
+                            Console.WriteLine("     | ");
+                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 10);
+                            Console.WriteLine("     | ");
+                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 11);
+                            Console.WriteLine("     | ");
+                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 12);
+                            Console.WriteLine("_____|_");
+                            break;
+                        }
+                    case (1):
+                        {
+                            Console.WriteLine(" _____ ");
+                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 8);
+                            Console.WriteLine(" |   | ");
+                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 9);
+                            Console.WriteLine(" o   | ");
+                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 10);
+                            Console.WriteLine("     | ");
+                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 11);
+                            Console.WriteLine("     | ");
+                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 12);
+                            Console.WriteLine("_____|_");
+                            break;
+                        }
+                    case (2):
+                        {
+                            Console.WriteLine(" _____ ");
+                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 8);
+                            Console.WriteLine(" |   | ");
+                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 9);
+                            Console.WriteLine(" o   | ");
+                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 10);
+                            Console.WriteLine(" |   | ");
+                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 11);
+                            Console.WriteLine("     | ");
+                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 12);
+                            Console.WriteLine("_____|_");
+                            break;
+                        }
+                    case (3):
+                        {
+                            Console.WriteLine(" _____ ");
+                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 8);
+                            Console.WriteLine(" |   | ");
+                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 9);
+                            Console.WriteLine(" o   | ");
+                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 10);
+                            Console.WriteLine("/|   | ");
+                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 11);
+                            Console.WriteLine("     | ");
+                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 12);
+                            Console.WriteLine("_____|_");
+                            break;
+                        }
+                    case (4):
+                        {
+                            Console.WriteLine(" _____ ");
+                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 8);
+                            Console.WriteLine(" |   | ");
+                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 9);
+                            Console.WriteLine(" o   | ");
+                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 10);
+                            Console.WriteLine("/|\\  | ");
+                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 11);
+                            Console.WriteLine("     | ");
+                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 12);
+                            Console.WriteLine("_____|_");
+                            break;
+                        }
+                    case (5):
+                        {
+                            Console.WriteLine(" _____ ");
+                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 8);
+                            Console.WriteLine(" |   | ");
+                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 9);
+                            Console.WriteLine(" o   | ");
+                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 10);
+                            Console.WriteLine("/|\\  | ");
+                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 11);
+                            Console.WriteLine("  \\  | ");
+                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 12);
+                            Console.WriteLine("_____|_");
+                            break;
+                        }
+                    case (6):
+                        {
+                            Console.WriteLine(" _____ ");
+                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 8);
+                            Console.WriteLine(" |   | ");
+                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 9);
+                            Console.WriteLine(" o   | ");
+                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 10);
+                            Console.WriteLine("/|\\  | ");
+                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 11);
+                            Console.WriteLine("/ \\  | ");
+                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 12);
+                            Console.WriteLine("_____|_");
+                            break;
+                        }
+                    case (7):
+                        {
+                            Console.WriteLine(" _____ ");
+                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 8);
+                            Console.WriteLine(" |   | ");
+                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 9);
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.Write(" x  ");
+                            Console.ForegroundColor = ConsoleColor.White;
+                            Console.Write(" | ");
+                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 10);
+                            Console.WriteLine("/|\\  | ");
+                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 11);
+                            Console.WriteLine("/ \\  | ");
+                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 12);
+                            Console.WriteLine("_____|_");
+                            break;
+                        }
+                    default:
+                        {
+                            Console.WriteLine(" _____ ");
+                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 8);
+                            Console.WriteLine(" |   | ");
+                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 9);
+                            Console.WriteLine("     | ");
+                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 10);
+                            Console.WriteLine("     | ");
+                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 11);
+                            Console.WriteLine("     | ");
+                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 12);
+                            Console.WriteLine("_____|_");
+                            break;
+                        }
+                }
+            }
+
+
+
+
+            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition);
+        }
+
+        /// <summary>
         /// display continue prompt
         /// </summary>
         private static void DisplayContinuePrompt()
@@ -1277,6 +1641,11 @@ namespace Capstone_Project_Starting
             Console.WriteLine("You win if you guess all the letters of the word before the hangman is finished.");
 
             DisplayContinuePrompt();
+        }
+
+        private static void DisplayOpeningScreen()
+        {
+            DisplayScreenHeader("Welcome!");
         }
     }
 
