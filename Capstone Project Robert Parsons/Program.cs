@@ -9,12 +9,19 @@ namespace Capstone_Project_Starting
 {
     class Program
     {
+        //************************************
+        //Title: Hangman
+        //Application Type: Console
+        //Description: Lets the user play hangman, letting them add in custom words or using pre-made word packs.
+        //Author: Robert Parsons
+        //Date Created: 11/11/2019
+        //Last Modified: 12/2/2019
+        //************************************
         static void Main(string[] args)
         {
             //CURRENT PROBLEMS
 
             //Currently no way to remedy files not existing
-            //All word packs other than the veggie pack and gem pack do not exists
             //FOrmatting is probably inconsistant
             //Removing custom words has not been implemented
             //No image for the dang thing
@@ -262,6 +269,9 @@ namespace Capstone_Project_Starting
                 currentLine++;
             }
 
+            //
+            // Adds custom words to the words list
+            // 
             bool customWordErrorOccured = ReadWordsFromFile(customWordDataPath, hiddenWords);
 
             //
@@ -530,20 +540,28 @@ namespace Capstone_Project_Starting
 
                     DisplayScreenHeader("Word Packs");
 
-                    WordPackMenuLine("1", "Vegetable Pack (10 Words)", wordPackDataPath);
+                    WordPackMenuLine("1", "Vegetable Pack (20 Words)", wordPackDataPath);
                     WordPackMenuLine("2", "Gem Pack (20 Words)", wordPackDataPath);
                     WordPackMenuLine("3", "Mountain Moons Pack (20 Words)", wordPackDataPath);
                     WordPackMenuLine("4", "Fruit Pack (20 Words)", wordPackDataPath);
-                    WordPackMenuLine("5", "Not Implemented", wordPackDataPath);
-                    WordPackMenuLine("6", "Not Implemented", wordPackDataPath);
-                    WordPackMenuLine("7", "NI'Word of the Day' Pack A (20 Words)", wordPackDataPath);
-                    WordPackMenuLine("8", "NI'Word of the Day' Pack B (20 Words)", wordPackDataPath);
-                    WordPackMenuLine("9", "NI'Word of the Day' Pack C (20 Words)", wordPackDataPath);
+                    WordPackMenuLine("5", "Ancient Empires Pack (20 Words)", wordPackDataPath);
+                    WordPackMenuLine("6", "Instrument Pack (20 Words)", wordPackDataPath);
+                    WordPackMenuLine("7", "'Word of the Day' Pack A (20 Words)", wordPackDataPath);
+                    WordPackMenuLine("8", "'Word of the Day' Pack B (20 Words)", wordPackDataPath);
+                    WordPackMenuLine("9", "'Word of the Day' Pack C (20 Words)", wordPackDataPath);
 
                     MainMenuLine("~", "Exit to Menu");
+                    
+                    //
+                    // This determines what is shown to the user. If the pack has a 1, it is on, otherwise it is a 0 and off.
+                    // If the file exists but has differing information (ie no 0), it will override the first 9 lines
+                    //
                     do
                     {
 
+                        //
+                        // Single Key input
+                        //
                         ConsoleKeyInfo userInput = Console.ReadKey();
                         userConvertedResponse = char.Parse(userInput.KeyChar.ToString().ToLower());
                         validResponse = true;
@@ -608,7 +626,6 @@ namespace Capstone_Project_Starting
                                 }
                             case ('4'):
                                 {
-
                                     string onOrOff = File.ReadLines(wordPackDataPath).Skip(3).Take(1).First();
                                     string[] previousFile = File.ReadAllLines(wordPackDataPath);
 
@@ -628,22 +645,97 @@ namespace Capstone_Project_Starting
                                 }
                             case ('5'):
                                 {
+                                    string onOrOff = File.ReadLines(wordPackDataPath).Skip(4).Take(1).First();
+                                    string[] previousFile = File.ReadAllLines(wordPackDataPath);
+
+                                    if (onOrOff.Contains("0"))
+                                    {
+
+                                        previousFile[4] = "AncientEmpirePack: 1";
+                                        File.WriteAllLines(wordPackDataPath, previousFile);
+
+                                    }
+                                    else
+                                    {
+                                        previousFile[4] = "AncientEmpirePack: 0";
+                                        File.WriteAllLines(wordPackDataPath, previousFile);
+                                    }
                                     break;
                                 }
                             case ('6'):
                                 {
+                                    string onOrOff = File.ReadLines(wordPackDataPath).Skip(5).Take(1).First();
+                                    string[] previousFile = File.ReadAllLines(wordPackDataPath);
+
+                                    if (onOrOff.Contains("0"))
+                                    {
+
+                                        previousFile[5] = "InstrumentPack: 1";
+                                        File.WriteAllLines(wordPackDataPath, previousFile);
+
+                                    }
+                                    else
+                                    {
+                                        previousFile[5] = "InstrumentPack: 0";
+                                        File.WriteAllLines(wordPackDataPath, previousFile);
+                                    }
                                     break;
                                 }
                             case ('7'):
                                 {
+                                    string onOrOff = File.ReadLines(wordPackDataPath).Skip(6).Take(1).First();
+                                    string[] previousFile = File.ReadAllLines(wordPackDataPath);
+
+                                    if (onOrOff.Contains("0"))
+                                    {
+
+                                        previousFile[6] = "WOTDUnoPack: 1";
+                                        File.WriteAllLines(wordPackDataPath, previousFile);
+
+                                    }
+                                    else
+                                    {
+                                        previousFile[6] = "WOTDUnoPack: 0";
+                                        File.WriteAllLines(wordPackDataPath, previousFile);
+                                    }
                                     break;
                                 }
                             case ('8'):
                                 {
+                                    string onOrOff = File.ReadLines(wordPackDataPath).Skip(7).Take(1).First();
+                                    string[] previousFile = File.ReadAllLines(wordPackDataPath);
+
+                                    if (onOrOff.Contains("0"))
+                                    {
+
+                                        previousFile[7] = "WOTDDosPack: 1";
+                                        File.WriteAllLines(wordPackDataPath, previousFile);
+
+                                    }
+                                    else
+                                    {
+                                        previousFile[7] = "WOTDDosPack: 0";
+                                        File.WriteAllLines(wordPackDataPath, previousFile);
+                                    }
                                     break;
                                 }
                             case ('9'):
                                 {
+                                    string onOrOff = File.ReadLines(wordPackDataPath).Skip(8).Take(1).First();
+                                    string[] previousFile = File.ReadAllLines(wordPackDataPath);
+
+                                    if (onOrOff.Contains("0"))
+                                    {
+
+                                        previousFile[8] = "WOTDTresPack: 1";
+                                        File.WriteAllLines(wordPackDataPath, previousFile);
+
+                                    }
+                                    else
+                                    {
+                                        previousFile[8] = "WOTDTresPack: 0";
+                                        File.WriteAllLines(wordPackDataPath, previousFile);
+                                    }
                                     break;
                                 }
                             case ('~'):
@@ -653,7 +745,7 @@ namespace Capstone_Project_Starting
                                 }
                             default:
                                 {
-                                    Console.WriteLine(" Invalid choice. Please select a number 1-0 or ~");
+                                    Console.WriteLine(" Invalid choice. Please select a number 1-9 or ~");
                                     validResponse = false;
                                     break;
                                 }
@@ -663,6 +755,9 @@ namespace Capstone_Project_Starting
             }
             catch
             {
+                //
+                //This block is used if the file cannot be reached. Does not fix the problem
+                //
                 DisplayScreenHeader("Word Packs");
 
                 Console.WriteLine("Error!");
@@ -681,6 +776,7 @@ namespace Capstone_Project_Starting
         {
             switch (currentLine)
             {
+                //Vegetables
                 case (1):
                     {
                         hiddenWords.Add("cucumber");
@@ -705,6 +801,7 @@ namespace Capstone_Project_Starting
                         hiddenWords.Add("pumpkin");
                         break;
                     }
+                //Gemstones
                 case (2):
                     {
                         hiddenWords.Add("chrysolite");
@@ -729,6 +826,7 @@ namespace Capstone_Project_Starting
                         hiddenWords.Add("carnelian");
                         break;
                     }
+                //Mountain Moons
                 case (3):
                     {
                         hiddenWords.Add("huygens");
@@ -754,6 +852,7 @@ namespace Capstone_Project_Starting
 
                         break;
                     }
+                //Fruits
                 case (4):
                     {
                         hiddenWords.Add("apple");
@@ -778,26 +877,132 @@ namespace Capstone_Project_Starting
                         hiddenWords.Add("mandarin");
                         break;
                     }
+                //Ancient Empires
                 case (5):
                     {
+                        hiddenWords.Add("akkadian");
+                        hiddenWords.Add("babylonian");
+                        hiddenWords.Add("egyptian");
+                        hiddenWords.Add("mitanni");
+                        hiddenWords.Add("hittite");
+                        hiddenWords.Add("carthaginian");
+                        hiddenWords.Add("kushite");
+                        hiddenWords.Add("median");
+                        hiddenWords.Add("achaemenid");
+                        hiddenWords.Add("nanda");
+                        hiddenWords.Add("macedonian");
+                        hiddenWords.Add("mauryan");
+                        hiddenWords.Add("seleucid");
+                        hiddenWords.Add("ptolemaic");
+                        hiddenWords.Add("parthian");
+                        hiddenWords.Add("armenian");
+                        hiddenWords.Add("shunga");
+                        hiddenWords.Add("pontic");
+                        hiddenWords.Add("roman");
+                        hiddenWords.Add("aksumite");
                         break;
                     }
+                //Instruments
                 case (6):
                     {
+                        hiddenWords.Add("flute");
+                        hiddenWords.Add("keyboard");
+                        hiddenWords.Add("cowbell");
+                        hiddenWords.Add("clarient");
+                        hiddenWords.Add("guitar");
+                        hiddenWords.Add("saxophone");
+                        hiddenWords.Add("kazoo");
+                        hiddenWords.Add("viola");
+                        hiddenWords.Add("maracas");
+                        hiddenWords.Add("fiddle");
+                        hiddenWords.Add("accordion");
+                        hiddenWords.Add("harmonica");
+                        hiddenWords.Add("tambourine");
+                        hiddenWords.Add("ocarina");
+                        hiddenWords.Add("piccolo");
+                        hiddenWords.Add("vibraphone");
+                        hiddenWords.Add("bagpipes");
+                        hiddenWords.Add("ukulele");
+                        hiddenWords.Add("trumpet");
+                        hiddenWords.Add("drums");
                         break;
                     }
+                //Word of the day - Pack 1
                 case (7):
                     {
+                        hiddenWords.Add("apocryphal");
+                        hiddenWords.Add("dilapidated");
+                        hiddenWords.Add("fraught");
+                        hiddenWords.Add("sobriquet");
+                        hiddenWords.Add("chilblain");
+                        hiddenWords.Add("posthaste");
+                        hiddenWords.Add("aphorism");
+                        hiddenWords.Add("teleological");
+                        hiddenWords.Add("gambit");
+                        hiddenWords.Add("incongruous");
+                        hiddenWords.Add("officious");
+                        hiddenWords.Add("recondite");
+                        hiddenWords.Add("fortitude");
+                        hiddenWords.Add("heterodox");
+                        hiddenWords.Add("sempiternal");
+                        hiddenWords.Add("retinue");
+                        hiddenWords.Add("comestible");
+                        hiddenWords.Add("incognito");
+                        hiddenWords.Add("pointillistic");
+                        hiddenWords.Add("lyric");
                         break;
                     }
+                //Word of the day - Pack 2
                 case (8):
                     {
+                        hiddenWords.Add("mitigate");
+                        hiddenWords.Add("sawbones");
+                        hiddenWords.Add("futhark");
+                        hiddenWords.Add("divulge");
+                        hiddenWords.Add("redound");
+                        hiddenWords.Add("caustic");
+                        hiddenWords.Add("scapegoat");
+                        hiddenWords.Add("blandish");
+                        hiddenWords.Add("exoteric");
+                        hiddenWords.Add("wheedle");
+                        hiddenWords.Add("belfry");
+                        hiddenWords.Add("hobbyhorse");
+                        hiddenWords.Add("maunder");
+                        hiddenWords.Add("knackered");
+                        hiddenWords.Add("fiduciary");
+                        hiddenWords.Add("coruscate");
+                        hiddenWords.Add("undulate");
+                        hiddenWords.Add("lackadaisical");
+                        hiddenWords.Add("respite");
+                        hiddenWords.Add("phantasm");
                         break;
                     }
+                //Word of the day - Pack 3
                 case (9):
                     {
+                        hiddenWords.Add("prodigious");
+                        hiddenWords.Add("hypermnesia");
+                        hiddenWords.Add("ephemeral");
+                        hiddenWords.Add("asperity");
+                        hiddenWords.Add("trivial");
+                        hiddenWords.Add("stratagem");
+                        hiddenWords.Add("footle");
+                        hiddenWords.Add("incipient");
+                        hiddenWords.Add("darling");
+                        hiddenWords.Add("regale");
+                        hiddenWords.Add("countermand");
+                        hiddenWords.Add("palimpsest");
+                        hiddenWords.Add("tenacious");
+                        hiddenWords.Add("remittance");
+                        hiddenWords.Add("pungle");
+                        hiddenWords.Add("scavenger");
+                        hiddenWords.Add("disparage");
+                        hiddenWords.Add("commemorate");
+                        hiddenWords.Add("lacuna");
+                        hiddenWords.Add("disbursement");
                         break;
                     }
+
                 default:
                     {
                         break;
