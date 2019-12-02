@@ -14,7 +14,7 @@ namespace Capstone_Project_Starting
         //Application Type: Console
         //Description: Lets the user play hangman, letting them add in custom words or using pre-made word packs.
         //Author: Robert Parsons
-        //Date Created: 11/11/2019
+        //Date Created: 11/18/2019
         //Last Modified: 12/2/2019
         //************************************
         static void Main(string[] args)
@@ -23,7 +23,6 @@ namespace Capstone_Project_Starting
 
             //Currently no way to remedy files not existing
             //FOrmatting is probably inconsistant
-            //Removing custom words has not been implemented
 
             //
             // Sets the text color to white, because I think it looks better that way.
@@ -32,6 +31,8 @@ namespace Capstone_Project_Starting
 
             string customWordDataPath = @"HangmanInfo\WordList.txt";
             string wordPackDataPath = @"HangmanInfo\WordPacks.txt";
+
+            DisplayOpeningScreen();
 
             MainMenu(customWordDataPath, wordPackDataPath);
         }
@@ -96,7 +97,7 @@ namespace Capstone_Project_Starting
                             }
                         case ('4'):
                             {
-                                DisplayRemoveCustomWords(customWordDataPath, alphabet);
+                                DisplayRemoveCustomWords(customWordDataPath);
                                 break;
                             }
                         case ('5'):
@@ -287,7 +288,7 @@ namespace Capstone_Project_Starting
             if (customWordErrorOccured == true)
             {
                 DisplayScreenHeader("Hangman");
-                Console.WriteLine("There has been an error obtaining the custom words");
+                Console.WriteLine("There has been an error obtaining the custom words.");
                 Console.WriteLine($"Please make sure that the WordList file is in {customWordDataPath}");
                 Console.WriteLine("If it is there, please also make sure that any custom words are only using letters.");
                 DisplayContinuePrompt();
@@ -300,7 +301,7 @@ namespace Capstone_Project_Starting
             {
                 DisplayScreenHeader("Hangman");
                 Console.WriteLine("The word list is empty.");
-                Console.WriteLine("Although it is recommend that you fix this by adding words to the word list or adding in word packs, Hangman is still playable");
+                Console.WriteLine("Although it is recommend that you fix this by adding words to the word list or adding in word packs, Hangman is still playable.");
                 Console.WriteLine("The word list will now add words so that you can play Hangman.");
 
                 #region FALLBACK_WORDS
@@ -1559,7 +1560,7 @@ namespace Capstone_Project_Starting
             DisplayScreenHeader("Adding Custom Words");
 
             Console.WriteLine("Simply write in any words, using letters a-z, to add the words to the word pack!");
-            Console.WriteLine("Press ~ when you wish to exit to the menu");
+            Console.WriteLine("Press ~ when you wish to exit to the menu.");
 
             //
             // Reads the input to add the word.
@@ -1618,8 +1619,79 @@ namespace Capstone_Project_Starting
 
         }
 
-        private static void DisplayRemoveCustomWords(string customWordDataPath, List<char> alphabet)
+        /// <summary>
+        /// Shows the user all their custom words, and lets them delete the words by typing them in.
+        /// </summary>
+        /// <param name="customWordDataPath"></param>
+        /// <param name="alphabet"></param>
+        private static void DisplayRemoveCustomWords(string customWordDataPath)
         {
+            bool doneWithRemoving = false;
+
+            DisplayScreenHeader("Removing Custom Words");
+
+            //
+            // The main loop for removing custom words
+            // Provided the file can be reached, it displays all the custom words and lets the user type in the one they want deleted.
+            //
+            do
+            {
+
+                try
+                {
+                    //
+                    // Creates a list by looking at the word list file.
+                    //
+                    List<string> allCustomWords = File.ReadAllLines(customWordDataPath).ToList();
+
+                    if (allCustomWords.Count == 0)
+                    {
+                        Console.WriteLine("There are no custom words.");
+                        Console.WriteLine("As such, no custom words can be removed.");
+                        DisplayContinuePrompt();
+                        doneWithRemoving = true;
+                    }
+
+                    foreach (string word in allCustomWords)
+                    {
+                        Console.WriteLine(word);
+                    }
+                    Console.WriteLine();
+                    Console.WriteLine("Please type in the word you would like to remove.");
+                    Console.WriteLine("If you are done, type in ~ to exit.");
+
+                    //
+                    // Checks the user input. If it is the same as a custom word, it removes the custom word.
+                    //
+                    string userInput = Console.ReadLine().ToLower();
+                    if (userInput == "~")
+                    {
+                        doneWithRemoving = true;
+                    }
+                    else
+                    {
+                        foreach (string word in allCustomWords)
+                        {
+                            if (userInput == word.ToLower())
+                            {
+                                allCustomWords.Remove(word);
+                                break;
+                            }
+                        }
+                        File.WriteAllLines(customWordDataPath, allCustomWords);
+                    }
+                }
+                catch
+                {
+                    Console.WriteLine("The file could not be reached.");
+                    Console.WriteLine("Please make sure you can access and modify a file at the data path.");
+                    Console.WriteLine($"The datapath is {customWordDataPath}");
+                    doneWithRemoving = true;
+                    DisplayContinuePrompt();
+                }
+            } while (!doneWithRemoving);
+
+
 
         }
 
@@ -1643,9 +1715,20 @@ namespace Capstone_Project_Starting
             DisplayContinuePrompt();
         }
 
+        /// <summary>
+        /// Displays the opening screen that pops up when you start the application.
+        /// </summary>
         private static void DisplayOpeningScreen()
         {
             DisplayScreenHeader("Welcome!");
+
+            Console.WriteLine();
+            Console.WriteLine("This application will let you play hangman!");
+            Console.WriteLine("For more information on how to play hangman, goto the 'How to Play' section on the continuing screen.");
+            Console.WriteLine("This application also lets you add in custom words or add in packs of words.");
+            Console.WriteLine("In most screens, entering in '~' will bring you back to the main menu.");
+
+            DisplayContinuePrompt();
         }
     }
 
