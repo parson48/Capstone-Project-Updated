@@ -17,7 +17,8 @@ namespace Capstone_Project_Starting
             //All word packs other than the veggie pack and gem pack do not exists
             //FOrmatting is probably inconsistant
             //Adding custom words has not been implemented
-                                                  
+            //No image for the dang thing
+
             string customWordDataPath = @"HangmanInfo\WordList.txt";
             string wordPackDataPath = @"HangmanInfo\WordPacks.txt";
 
@@ -132,9 +133,9 @@ namespace Capstone_Project_Starting
             Console.Write($"[{precludingNumber}] ");
             Console.ForegroundColor = ConsoleColor.White;
             Console.Write(packName);
-            try
+            if (precludingNumber == "0")
             {
-                string onOrOff = File.ReadLines(wordPackDataPath).Skip(Int32.Parse(precludingNumber) - 1).Take(1).First();
+                string onOrOff = File.ReadLines(wordPackDataPath).Skip(9).Take(1).First();
                 if (onOrOff.Contains("1"))
                 {
                     Console.ForegroundColor = ConsoleColor.Cyan;
@@ -147,18 +148,12 @@ namespace Capstone_Project_Starting
                     Console.WriteLine($"  [Off] ");
                     Console.ForegroundColor = ConsoleColor.White;
                 }
-                else
-                {
-                    Console.ForegroundColor = ConsoleColor.Cyan;
-                    Console.WriteLine($"  [ERROR] - click this optiom to attempt to fix it.");
-                    Console.ForegroundColor = ConsoleColor.White;
-                }
             }
-            catch
+            else
             {
-                if (precludingNumber == "0")
+                try
                 {
-                    string onOrOff = File.ReadLines(wordPackDataPath).Skip(9).Take(1).First();
+                    string onOrOff = File.ReadLines(wordPackDataPath).Skip(Int32.Parse(precludingNumber) - 1).Take(1).First();
                     if (onOrOff.Contains("1"))
                     {
                         Console.ForegroundColor = ConsoleColor.Cyan;
@@ -171,14 +166,21 @@ namespace Capstone_Project_Starting
                         Console.WriteLine($"  [Off] ");
                         Console.ForegroundColor = ConsoleColor.White;
                     }
+                    else
+                    {
+                        Console.ForegroundColor = ConsoleColor.Cyan;
+                        Console.WriteLine($"  [ERROR] - click this optiom to attempt to fix it.");
+                        Console.ForegroundColor = ConsoleColor.White;
+                    }
                 }
-                else
+                catch
                 {
                     Console.ForegroundColor = ConsoleColor.Cyan;
                     Console.WriteLine($"  [ERROR] ");
                     Console.ForegroundColor = ConsoleColor.White;
                 }
             }
+
         }
 
         /// <summary>
@@ -198,7 +200,7 @@ namespace Capstone_Project_Starting
             //Adds a word list to the file, if it is on.
             //
             string[] WordPacksInformation = File.ReadAllLines(wordPackDataPath);
-            int currentLine = 1;
+            int currentLine = 0;
 
             foreach (string line in WordPacksInformation)
             {
@@ -206,6 +208,11 @@ namespace Capstone_Project_Starting
                 {
                     switch (currentLine)
                     {
+                        case (0):
+                            {
+                                HangmanWordPacks(hiddenWords, currentLine);
+                                break;
+                            }
                         case (1):
                             {
                                 HangmanWordPacks(hiddenWords, currentLine);
@@ -682,7 +689,7 @@ namespace Capstone_Project_Starting
             switch (currentLine)
             {
                 case (1):
-                {
+                    {
                         hiddenWords.Add("cucumber");
                         hiddenWords.Add("artichoke");
                         hiddenWords.Add("rutabaga");
@@ -694,9 +701,9 @@ namespace Capstone_Project_Starting
                         hiddenWords.Add("eggplant");
                         hiddenWords.Add("lettuce");
                         break;
-                }
+                    }
                 case (2):
-                {
+                    {
                         hiddenWords.Add("chrysolite");
                         hiddenWords.Add("sapphire");
                         hiddenWords.Add("garnet");
@@ -718,9 +725,9 @@ namespace Capstone_Project_Starting
                         hiddenWords.Add("jasper");
                         hiddenWords.Add("carnelian");
                         break;
-                }
+                    }
                 case (3):
-                {
+                    {
                         hiddenWords.Add("huygens");
                         hiddenWords.Add("hadley");
                         hiddenWords.Add("bradley");
@@ -743,15 +750,15 @@ namespace Capstone_Project_Starting
                         hiddenWords.Add("hansteen");
 
                         break;
-                }
+                    }
                 case (4):
-                {
+                    {
                         break;
-                }
+                    }
                 case (5):
-                {
+                    {
                         break;
-                }
+                    }
                 case (6):
                     {
                         break;
@@ -944,7 +951,7 @@ namespace Capstone_Project_Starting
         private static bool ReadWordsFromFile(string customDataPath, List<string> hiddenWord)
         {
             bool errorOccured = false;
-            
+
             try
             {
                 string[] listOfWords = File.ReadAllLines(customDataPath);
@@ -962,7 +969,7 @@ namespace Capstone_Project_Starting
             }
             catch
             {
-               errorOccured = true;
+                errorOccured = true;
             }
 
             return errorOccured;
@@ -976,6 +983,7 @@ namespace Capstone_Project_Starting
             string newWord;
             bool invalidWord = false;
             bool exitToMenu = false;
+            bool invalidLetter;
             DisplayScreenHeader("Adding Custom Words");
 
             Console.WriteLine("Simply write in any words, using letters a-z, to add the words to the word pack!");
@@ -987,7 +995,7 @@ namespace Capstone_Project_Starting
             do
             {
                 newWord = Console.ReadLine();
-                invalidWord = false;
+                invalidLetter = true;
 
                 if (newWord == "~")
                 {
@@ -997,8 +1005,21 @@ namespace Capstone_Project_Starting
                 {
                     foreach (char wordLetter in newWord)
                     {
-                        if (char.IsLetter)
-                        { 
+                        invalidWord = true;
+                        foreach (char letter in alphabet)
+                        {
+                            if (wordLetter == letter)
+                            {
+                                invalidLetter = false;
+                            }
+                            if (!invalidLetter)
+                            {
+                                invalidWord = false;
+                            }
+                        }
+                        if (invalidWord)
+                        {
+                            break;
                         }
                     }
                     if (invalidWord)
