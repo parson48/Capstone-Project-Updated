@@ -146,24 +146,7 @@ namespace Capstone_Project_Starting
             Console.Write($"[{precludingNumber}] ");
             Console.ForegroundColor = ConsoleColor.White;
             Console.Write(packName);
-            if (precludingNumber == "0")
-            {
-                string onOrOff = File.ReadLines(wordPackDataPath).Skip(9).Take(1).First();
-                if (onOrOff.Contains("1"))
-                {
-                    Console.ForegroundColor = ConsoleColor.Cyan;
-                    Console.WriteLine($"  [On] ");
-                    Console.ForegroundColor = ConsoleColor.White;
-                }
-                else if (onOrOff.Contains("0"))
-                {
-                    Console.ForegroundColor = ConsoleColor.Cyan;
-                    Console.WriteLine($"  [Off] ");
-                    Console.ForegroundColor = ConsoleColor.White;
-                }
-            }
-            else
-            {
+
                 try
                 {
                     string onOrOff = File.ReadLines(wordPackDataPath).Skip(Int32.Parse(precludingNumber) - 1).Take(1).First();
@@ -192,8 +175,6 @@ namespace Capstone_Project_Starting
                     Console.WriteLine($"  [ERROR] ");
                     Console.ForegroundColor = ConsoleColor.White;
                 }
-            }
-
         }
 
         /// <summary>
@@ -359,13 +340,13 @@ namespace Capstone_Project_Starting
             do
             {
                 //
-                // Resets the game
+                // Resets the game & variables
                 //
                 userPickedCharacters.Clear();
                 completedWord = false;
                 letterInWord = false;
                 incorrectGuesses = 0;
-
+                userLostHangman = false;
 
                 //
                 // Initializes the hidden word, by checking all the user inputted words then randomly picking one from the list
@@ -404,11 +385,6 @@ namespace Capstone_Project_Starting
                 //
                 do
                 {
-                    //
-                    // Resets the variable to its initial state
-                    //
-                    userLostHangman = false;
-
                     //
                     // Reads the user's input of a letter.
                     //
@@ -1469,7 +1445,7 @@ namespace Capstone_Project_Starting
         }
 
         /// <summary>
-        /// display continue prompt
+        /// Display continue prompt
         /// </summary>
         private static void DisplayContinuePrompt()
         {
