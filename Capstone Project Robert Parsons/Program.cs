@@ -17,6 +17,7 @@ namespace Capstone_Project_Starting
         //Date Created: 11/18/2019
         //Last Modified: 12/2/2019
         //************************************
+
         static void Main(string[] args)
         {
             //CURRENT PROBLEMS
@@ -326,7 +327,6 @@ namespace Capstone_Project_Starting
         private static void Hangman(string customWordDataPath, string wordPackDataPath, List<char> alphabet)
         {
             //
-            //
             // variable declaration
             //        
             //"changingWord" is the word that is shown, that slowly gets revealed.
@@ -401,6 +401,11 @@ namespace Capstone_Project_Starting
                 //
                 do
                 {
+                    //
+                    // Resets the variable to its initial state
+                    //
+                    userLostHangman = false;
+
                     //
                     // Reads the user's input of a letter.
                     //
@@ -566,12 +571,18 @@ namespace Capstone_Project_Starting
                     Console.WriteLine($"The hidden word was {hiddenWords[randomNumber]}.");
                     Console.ReadKey();
                 }
-                if (userLostHangman)
+                else if (userLostHangman)
                 {
                     Console.WriteLine("You did not guess the hidden word in time.");
                     Console.WriteLine($"The hidden word was {hiddenWords[randomNumber]}.");
                     Console.ReadKey();
                 }
+                else if (!userDoneWithHangman)
+                {
+                    Console.WriteLine($"The hidden word was {hiddenWords[randomNumber]}.");
+                    Console.ReadKey();
+                }
+
             } while (userDoneWithHangman == false);
         }
 
@@ -1651,34 +1662,38 @@ namespace Capstone_Project_Starting
                         DisplayContinuePrompt();
                         doneWithRemoving = true;
                     }
-
-                    foreach (string word in allCustomWords)
-                    {
-                        Console.WriteLine(word);
-                    }
-                    Console.WriteLine();
-                    Console.WriteLine("Please type in the word you would like to remove.");
-                    Console.WriteLine("If you are done, type in ~ to exit.");
-
-                    //
-                    // Checks the user input. If it is the same as a custom word, it removes the custom word.
-                    //
-                    string userInput = Console.ReadLine().ToLower();
-                    if (userInput == "~")
-                    {
-                        doneWithRemoving = true;
-                    }
                     else
                     {
+                        Console.WriteLine();
+                        Console.WriteLine("Current Words:");
                         foreach (string word in allCustomWords)
                         {
-                            if (userInput == word.ToLower())
-                            {
-                                allCustomWords.Remove(word);
-                                break;
-                            }
+                            Console.WriteLine(word);
                         }
-                        File.WriteAllLines(customWordDataPath, allCustomWords);
+                        Console.WriteLine();
+                        Console.WriteLine("Please type in the word you would like to remove.");
+                        Console.WriteLine("If you are done, type in ~ to exit.");
+
+                        //
+                        // Checks the user input. If it is the same as a custom word, it removes the custom word.
+                        //
+                        string userInput = Console.ReadLine().ToLower();
+                        if (userInput == "~")
+                        {
+                            doneWithRemoving = true;
+                        }
+                        else
+                        {
+                            foreach (string word in allCustomWords)
+                            {
+                                if (userInput == word.ToLower())
+                                {
+                                    allCustomWords.Remove(word);
+                                    break;
+                                }
+                            }
+                            File.WriteAllLines(customWordDataPath, allCustomWords);
+                        }
                     }
                 }
                 catch
@@ -1690,9 +1705,6 @@ namespace Capstone_Project_Starting
                     DisplayContinuePrompt();
                 }
             } while (!doneWithRemoving);
-
-
-
         }
 
         /// <summary>
