@@ -21,7 +21,7 @@ namespace Capstone_Project_Starting
         static void Main(string[] args)
         {
             //
-            // Sets the text color to white, because I think it looks better that way.
+            // Sets the text color to white, because I think it looks much better that way.
             //
             Console.ForegroundColor = ConsoleColor.White;
 
@@ -799,15 +799,25 @@ namespace Capstone_Project_Starting
             }
             catch
             {
-                //
-                //This block is used if the file cannot be reached. Does not fix the problem
-                //
-                DisplayScreenHeader("Word Packs");
+                try
+                {
+                    File.Create(wordPackDataPath);
+                    Console.WriteLine("File did not previously exist, so it was created.");
+                    Console.WriteLine("Exiting to the main menu.");
+                    DisplayContinuePrompt();
+                }
+                catch
+                {
+                    //
+                    //This block is used if the file cannot be reached. 
+                    //
+                    DisplayScreenHeader("Word Packs");
 
-                Console.WriteLine("Error!");
-                Console.WriteLine($"The program cannot reach the word packs file at {wordPackDataPath}");
-                Console.WriteLine("Please try making sure the file exists");
-                DisplayContinuePrompt();
+                    Console.WriteLine("Error!");
+                    Console.WriteLine($"The program cannot reach the word packs file at {wordPackDataPath}");
+                    Console.WriteLine("Please try making sure the file exists");
+                    DisplayContinuePrompt();
+                }
             }
         }
 
@@ -1597,8 +1607,16 @@ namespace Capstone_Project_Starting
                         }
                         catch
                         {
-                            Console.WriteLine("Application could not write to to the file.");
-                            Console.WriteLine("Make sure that the application can access the file and try again.");
+                            try
+                            {
+                                File.Create(customWordDataPath);
+                                Console.WriteLine("File created! Try re-adding in the word!");
+                            }
+                            catch
+                            {
+                                Console.WriteLine("Application could not write to to the file.");
+                                Console.WriteLine("Make sure that the application can access the file and try again.");
+                            }
                         }
                     }
                 }
@@ -1697,10 +1715,10 @@ namespace Capstone_Project_Starting
             DisplayScreenHeader("How to Play");
 
             Console.WriteLine("Playing hangman is quit simple.");
-            Console.WriteLine("The computer picks a word, and displays the word, replacing unguessed letters with *");
-            Console.WriteLine("Simply guess a letter a-z that you think is in the picked word");
-            Console.WriteLine("If you are correct, the displayed word replaces any * with the correct letter");
-            Console.WriteLine("However, incorrect guesses further detail the hangman, with enough incorrect guesses losing you the game");
+            Console.WriteLine("The computer picks a word, and displays the word, replacing unguessed letters with *.");
+            Console.WriteLine("Simply guess a letter a-z that you think is in the picked word.");
+            Console.WriteLine("If you are correct, the displayed word replaces any * with the correct letter.");
+            Console.WriteLine("However, incorrect guesses further detail the hangman, with enough incorrect guesses losing you the game.");
             Console.WriteLine("You win if you guess all the letters of the word before the hangman is finished.");
 
             DisplayContinuePrompt();
