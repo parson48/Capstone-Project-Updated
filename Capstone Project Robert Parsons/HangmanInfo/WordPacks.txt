@@ -1,4 +1,4 @@
-﻿VegtablePack: 0
+﻿VegetablePack: 0
 GemPack: 0
 MoonMountainPack: 0
 FruitPack: 0
