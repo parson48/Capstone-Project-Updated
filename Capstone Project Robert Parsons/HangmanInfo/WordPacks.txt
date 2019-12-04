@@ -1,12 +1,12 @@
-﻿VeggiePack: 1
-GemPack: 1
-MoonMountainPack: 1
-0
-0
-0
-0
-0
-0
+﻿VegtablePack: 0
+GemPack: 0
+MoonMountainPack: 0
+FruitPack: 0
+AncientEmpirePack: 0
+InstrumentPack: 0
+WOTDUnoPack: 0
+WOTDDosPack: 0
+WOTDTresPack: 0
 0
 
 ############

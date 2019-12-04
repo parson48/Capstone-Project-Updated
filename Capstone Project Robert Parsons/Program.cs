@@ -20,11 +20,6 @@ namespace Capstone_Project_Starting
 
         static void Main(string[] args)
         {
-            //CURRENT PROBLEMS
-
-            //Currently no way to remedy files not existing
-            //FOrmatting is probably inconsistant
-
             //
             // Sets the text color to white, because I think it looks better that way.
             //
@@ -116,7 +111,7 @@ namespace Capstone_Project_Starting
                             }
                         default:
                             {
-                                Console.WriteLine(" Invalid choice. Please select a number 1-6");
+                                Console.WriteLine(" Invalid choice. Please select a number 1-6.");
                                 validResponse = false;
                                 break;
                             }
@@ -187,7 +182,7 @@ namespace Capstone_Project_Starting
                     else
                     {
                         Console.ForegroundColor = ConsoleColor.Cyan;
-                        Console.WriteLine($"  [ERROR] - click this optiom to attempt to fix it.");
+                        Console.WriteLine($"  [ERROR] - click this option to attempt to fix it.");
                         Console.ForegroundColor = ConsoleColor.White;
                     }
                 }
@@ -281,7 +276,15 @@ namespace Capstone_Project_Starting
             //
             // Adds custom words to the words list
             // 
-            bool customWordErrorOccured = ReadWordsFromFile(customWordDataPath, hiddenWords);
+            bool customWordErrorOccured;
+            try
+            {
+                customWordErrorOccured = ReadWordsFromFile(customWordDataPath, hiddenWords);
+            }
+            catch
+            {
+                customWordErrorOccured = false;
+            }
 
             //
             // Gives the user a heads up if the custom words aren't included.
@@ -302,7 +305,7 @@ namespace Capstone_Project_Starting
             {
                 DisplayScreenHeader("Hangman");
                 Console.WriteLine("The word list is empty.");
-                Console.WriteLine("Although it is recommend that you fix this by adding words to the word list or adding in word packs, Hangman is still playable.");
+                Console.WriteLine("Although it is recommended that you fix this by adding words to the word list or adding in word packs, Hangman is still playable.");
                 Console.WriteLine("The word list will now add words so that you can play Hangman.");
 
                 #region FALLBACK_WORDS
@@ -429,7 +432,7 @@ namespace Capstone_Project_Starting
                         if (userConvertedResponse == '~')
                         {
                             Console.WriteLine();
-                            Console.WriteLine("Exiting hangman!");
+                            Console.WriteLine("Exiting hangman!".PadRight(Console.WindowWidth-1));
                             userDoneWithHangman = true;
                             validUserInput = true;
                             DisplayContinuePrompt();
