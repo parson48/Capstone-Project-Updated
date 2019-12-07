@@ -9,35 +9,24 @@ namespace Capstone_Project_Starting
 {
     class Program
     {
-        //************************************
-        //Title: Hangman
-        //Application Type: Console
-        //Description: Lets the user play hangman, letting them add in custom words or using pre-made word packs.
-        //Author: Robert Parsons
-        //Date Created: 11/18/2019
-        //Last Modified: 12/7/2019
-        //************************************
-
         static void Main(string[] args)
         {
-            //
-            // Sets the text color to white, because I think it looks much better that way.
-            //
-            Console.ForegroundColor = ConsoleColor.White;
+            //CURRENT PROBLEMS
 
+            //Currently no way to remedy files not existing
+            //All word packs other than the veggie pack and gem pack do not exists
+            //FOrmatting is probably inconsistant
+            //Adding custom words has not been implemented
+            //No image for the dang thing
+            //
+                                                  
             string customWordDataPath = @"HangmanInfo\WordList.txt";
             string wordPackDataPath = @"HangmanInfo\WordPacks.txt";
-
-            DisplayOpeningScreen();
 
             MainMenu(customWordDataPath, wordPackDataPath);
         }
 
-        /// <summary>
-        /// Has the code for the main menu of the application
-        /// </summary>
-        /// <param name="customWordDataPath"></param>
-        /// <param name="wordPackDataPath"></param>
+
         private static void MainMenu(string customWordDataPath, string wordPackDataPath)
         {
             //
@@ -53,9 +42,6 @@ namespace Capstone_Project_Starting
             List<char> alphabet = new List<char>();
             AlphabetCreation(alphabet);
 
-            //
-            // The menu itself, it will stay within this loop until the user exits the application
-            //
             do
             {
 
@@ -82,7 +68,7 @@ namespace Capstone_Project_Starting
                             }
                         case ('2'):
                             {
-                                DisplayHowToPlay();
+
                                 break;
                             }
                         case ('3'):
@@ -93,7 +79,7 @@ namespace Capstone_Project_Starting
                             }
                         case ('4'):
                             {
-                                DisplayRemoveCustomWords(customWordDataPath);
+                                DisplayRemoveCustomWords(customWordDataPath, alphabet);
                                 break;
                             }
                         case ('5'):
@@ -111,7 +97,7 @@ namespace Capstone_Project_Starting
                             }
                         default:
                             {
-                                Console.WriteLine(" Invalid choice. Please select a number 1-6.");
+                                Console.WriteLine(" Invalid choice. Please select a number 1-6");
                                 validResponse = false;
                                 break;
                             }
@@ -120,6 +106,8 @@ namespace Capstone_Project_Starting
             } while (!exitApplication);
 
         }
+
+
 
         /// <summary>
         /// Makes a line of the menu, coloring in the first part cyan and the second part white. 
@@ -146,7 +134,6 @@ namespace Capstone_Project_Starting
             Console.Write($"[{precludingNumber}] ");
             Console.ForegroundColor = ConsoleColor.White;
             Console.Write(packName);
-
             try
             {
                 string onOrOff = File.ReadLines(wordPackDataPath).Skip(Int32.Parse(precludingNumber) - 1).Take(1).First();
@@ -165,15 +152,34 @@ namespace Capstone_Project_Starting
                 else
                 {
                     Console.ForegroundColor = ConsoleColor.Cyan;
-                    Console.WriteLine($"  [ERROR] - click this option to attempt to fix it.");
+                    Console.WriteLine($"  [ERROR] - click this optiom to attempt to fix it.");
                     Console.ForegroundColor = ConsoleColor.White;
                 }
             }
             catch
             {
-                Console.ForegroundColor = ConsoleColor.Cyan;
-                Console.WriteLine($"  [ERROR] ");
-                Console.ForegroundColor = ConsoleColor.White;
+                if (precludingNumber == "0")
+                {
+                    string onOrOff = File.ReadLines(wordPackDataPath).Skip(9).Take(1).First();
+                    if (onOrOff.Contains("1"))
+                    {
+                        Console.ForegroundColor = ConsoleColor.Cyan;
+                        Console.WriteLine($"  [On] ");
+                        Console.ForegroundColor = ConsoleColor.White;
+                    }
+                    else if (onOrOff.Contains("0"))
+                    {
+                        Console.ForegroundColor = ConsoleColor.Cyan;
+                        Console.WriteLine($"  [Off] ");
+                        Console.ForegroundColor = ConsoleColor.White;
+                    }
+                }
+                else
+                {
+                    Console.ForegroundColor = ConsoleColor.Cyan;
+                    Console.WriteLine($"  [ERROR] ");
+                    Console.ForegroundColor = ConsoleColor.White;
+                }
             }
         }
 
@@ -254,18 +260,7 @@ namespace Capstone_Project_Starting
                 currentLine++;
             }
 
-            //
-            // Adds custom words to the words list
-            // 
-            bool customWordErrorOccured;
-            try
-            {
-                customWordErrorOccured = ReadWordsFromFile(customWordDataPath, hiddenWords);
-            }
-            catch
-            {
-                customWordErrorOccured = false;
-            }
+            bool customWordErrorOccured = ReadWordsFromFile(customWordDataPath, hiddenWords);
 
             //
             // Gives the user a heads up if the custom words aren't included.
@@ -273,7 +268,7 @@ namespace Capstone_Project_Starting
             if (customWordErrorOccured == true)
             {
                 DisplayScreenHeader("Hangman");
-                Console.WriteLine("There has been an error obtaining the custom words.");
+                Console.WriteLine("There has been an error obtaining the custom words");
                 Console.WriteLine($"Please make sure that the WordList file is in {customWordDataPath}");
                 Console.WriteLine("If it is there, please also make sure that any custom words are only using letters.");
                 DisplayContinuePrompt();
@@ -286,7 +281,7 @@ namespace Capstone_Project_Starting
             {
                 DisplayScreenHeader("Hangman");
                 Console.WriteLine("The word list is empty.");
-                Console.WriteLine("Although it is recommended that you fix this by adding words to the word list or adding in word packs, Hangman is still playable.");
+                Console.WriteLine("Although it is recommend that you fix this by adding words to the word list or adding in word packs, Hangman is still playable");
                 Console.WriteLine("The word list will now add words so that you can play Hangman.");
 
                 #region FALLBACK_WORDS
@@ -311,6 +306,7 @@ namespace Capstone_Project_Starting
         private static void Hangman(string customWordDataPath, string wordPackDataPath, List<char> alphabet)
         {
             //
+            //
             // variable declaration
             //        
             //"changingWord" is the word that is shown, that slowly gets revealed.
@@ -321,15 +317,12 @@ namespace Capstone_Project_Starting
             char[] hiddenCharacters;
             char userConvertedResponse;
             bool validUserInput;
-            bool completedWord;
-            bool letterInWord;
+            bool completedWord = false;
+            bool letterInWord = false;
             int completedCharacter;
             int hiddenCharactersPlacement;
             List<char> userPickedCharacters = new List<char>();
             bool userDoneWithHangman;
-            int incorrectGuesses;
-            bool userLostHangman = false;
-            const int MAX_INCORRECT_GUESSES = 7;
 
             //
             // Updates and Initializes the hiddenWords list from any word packs and any custom words
@@ -339,20 +332,19 @@ namespace Capstone_Project_Starting
 
             do
             {
-                //
-                // Resets the game & variables
-                //
                 userPickedCharacters.Clear();
                 completedWord = false;
                 letterInWord = false;
-                incorrectGuesses = 0;
-                userLostHangman = false;
+
 
                 //
                 // Initializes the hidden word, by checking all the user inputted words then randomly picking one from the list
                 //
                 int randomNumber = RandomNumber(0, hiddenWords.Count);
                 char[] changingWord = new char[hiddenWords[randomNumber].Length];
+
+                // Writes down the hidden word, used only for testing
+                //WriteLine("{0}", hiddenWords[randomNumber]);
 
                 //
                 //Makes the "hiddenCharacters" array into the hidden word
@@ -405,7 +397,7 @@ namespace Capstone_Project_Starting
                         if (userConvertedResponse == '~')
                         {
                             Console.WriteLine();
-                            Console.WriteLine("Exiting hangman!".PadRight(Console.WindowWidth - 1));
+                            Console.WriteLine("Exiting hangman!");
                             userDoneWithHangman = true;
                             validUserInput = true;
                             DisplayContinuePrompt();
@@ -424,19 +416,13 @@ namespace Capstone_Project_Starting
                             {
                                 Console.WriteLine();
                                 Console.WriteLine("Please Input a valid letter A-Z.");
-                                try
-                                {
-                                    Console.SetCursorPosition(tempLeftCursorPositionGuess, tempTopCursorPositionGuess);
-                                }
-                                catch
-                                {
-                                    Console.Write("Guess a letter >> ");
-                                }
-
+                                Console.SetCursorPosition(tempLeftCursorPositionGuess, tempTopCursorPositionGuess);
                             }
                         }
 
                     } while (!validUserInput);
+
+
 
                     DisplayScreenHeader("Hangman");
 
@@ -445,48 +431,30 @@ namespace Capstone_Project_Starting
                     //If it is equal, sets the letter from an asterisk to the correct letter
                     //
                     hiddenCharactersPlacement = 0;
-                    foreach (char character in hiddenCharacters)
+                    foreach (char c in hiddenCharacters)
                     {
-                        if (character == userConvertedResponse)
+                        if (c == userConvertedResponse)
                         {
                             letterInWord = true;
-                            changingWord[hiddenCharactersPlacement] = character;
+                            changingWord[hiddenCharactersPlacement] = c;
                         }
                         hiddenCharactersPlacement = hiddenCharactersPlacement + 1;
                     }
 
+                    userPickedCharacters.Add(userConvertedResponse);
+
                     //
-                    // Checks to make sure a letter was not already picked.
-                    // If it was already picked, it tells the user and DOES NOT PENALIZE THE USER
+                    //Says if the letter is in the word or not.
                     //
-                    if (userPickedCharacters.Contains(userConvertedResponse))
+                    if (letterInWord == true)
                     {
                         Console.WriteLine();
-                        Console.WriteLine($"{userConvertedResponse} was already guessed.");
+                        Console.WriteLine("Yes! {0} is in the word.", userConvertedResponse);
                     }
                     else
                     {
-                        userPickedCharacters.Add(userConvertedResponse);
-                        //
-                        //Says if the letter is in the word or not.
-                        //
-                        if (letterInWord == true)
-                        {
-                            Console.WriteLine();
-                            Console.WriteLine("Yes! {0} is in the word.", userConvertedResponse);
-                        }
-                        else
-                        {
-                            Console.WriteLine();
-                            Console.WriteLine("Sorry. {0} is not in the word.", userConvertedResponse);
-                            incorrectGuesses++;
-                        }
-                    }
-
-                    if (incorrectGuesses == MAX_INCORRECT_GUESSES)
-                    {
-                        completedWord = true;
-                        userLostHangman = true;
+                        Console.WriteLine();
+                        Console.WriteLine("Sorry. {0} is not in the word.", userConvertedResponse);
                     }
 
                     //
@@ -507,15 +475,6 @@ namespace Capstone_Project_Starting
                     int tempLeftCursorPosition = Console.CursorLeft;
 
                     PickedLetterDisplay(alphabet, userPickedCharacters, tempLeftCursorPosition, tempTopCursorPosition);
-
-                    //
-                    // Temporary gives the cursors potition, so that displayed the hangman does not disturb the reset of the layout
-                    //
-                    tempTopCursorPosition = Console.CursorTop;
-                    tempLeftCursorPosition = Console.CursorLeft;
-
-                    HangmanGuyDisplay(tempLeftCursorPosition, tempTopCursorPosition, incorrectGuesses);
-
                     //
                     // If all the asterisks are revealed, and thus all the letters have been guessed, it exits the loop.
                     //
@@ -538,7 +497,7 @@ namespace Capstone_Project_Starting
                     else { }
                 } while (!completedWord && !userDoneWithHangman);
 
-                if (completedWord && !userLostHangman)
+                if (completedWord)
                 {
                     //
                     //Congratulates the user
@@ -547,18 +506,6 @@ namespace Capstone_Project_Starting
                     Console.WriteLine($"The hidden word was {hiddenWords[randomNumber]}.");
                     Console.ReadKey();
                 }
-                else if (userLostHangman)
-                {
-                    Console.WriteLine("You did not guess the hidden word in time.");
-                    Console.WriteLine($"The hidden word was {hiddenWords[randomNumber]}.");
-                    Console.ReadKey();
-                }
-                else if (!userDoneWithHangman)
-                {
-                    Console.WriteLine($"The hidden word was {hiddenWords[randomNumber]}.");
-                    Console.ReadKey();
-                }
-
             } while (userDoneWithHangman == false);
         }
 
@@ -581,28 +528,21 @@ namespace Capstone_Project_Starting
 
                     DisplayScreenHeader("Word Packs");
 
-                    WordPackMenuLine("1", "Vegetable Pack (20 Words)", wordPackDataPath);
+                    WordPackMenuLine("0", "Fruit Pack (20 Words)", wordPackDataPath);
+                    WordPackMenuLine("1", "Vegetable Pack (10 Words)", wordPackDataPath);
                     WordPackMenuLine("2", "Gem Pack (20 Words)", wordPackDataPath);
                     WordPackMenuLine("3", "Mountain Moons Pack (20 Words)", wordPackDataPath);
-                    WordPackMenuLine("4", "Fruit Pack (20 Words)", wordPackDataPath);
-                    WordPackMenuLine("5", "Ancient Empires Pack (20 Words)", wordPackDataPath);
-                    WordPackMenuLine("6", "Instrument Pack (20 Words)", wordPackDataPath);
-                    WordPackMenuLine("7", "'Word of the Day' Pack A (20 Words)", wordPackDataPath);
-                    WordPackMenuLine("8", "'Word of the Day' Pack B (20 Words)", wordPackDataPath);
-                    WordPackMenuLine("9", "'Word of the Day' Pack C (20 Words)", wordPackDataPath);
+                    WordPackMenuLine("4", "Not Implemented", wordPackDataPath);
+                    WordPackMenuLine("5", "Not Implemented", wordPackDataPath);
+                    WordPackMenuLine("6", "Not Implemented", wordPackDataPath);
+                    WordPackMenuLine("7", "NI'Word of the Day' Pack A (20 Words)", wordPackDataPath);
+                    WordPackMenuLine("8", "NI'Word of the Day' Pack B (20 Words)", wordPackDataPath);
+                    WordPackMenuLine("9", "NI'Word of the Day' Pack C (20 Words)", wordPackDataPath);
 
                     MainMenuLine("~", "Exit to Menu");
-
-                    //
-                    // This determines what is shown to the user. If the pack has a 1, it is on, otherwise it is a 0 and off.
-                    // If the file exists but has differing information (ie no 0), it will override the first 9 lines
-                    //
                     do
                     {
 
-                        //
-                        // Single Key input
-                        //
                         ConsoleKeyInfo userInput = Console.ReadKey();
                         userConvertedResponse = char.Parse(userInput.KeyChar.ToString().ToLower());
                         validResponse = true;
@@ -610,9 +550,10 @@ namespace Capstone_Project_Starting
                         {
                             case ('1'):
                                 {
+                                    string onOrOff = File.ReadLines(wordPackDataPath).Skip(0).Take(1).First();
                                     string[] previousFile = File.ReadAllLines(wordPackDataPath);
 
-                                    if (previousFile[0].Contains("0"))
+                                    if (onOrOff.Contains("0"))
                                     {
 
                                         previousFile[0] = "VegetablePack: 1";
@@ -628,9 +569,10 @@ namespace Capstone_Project_Starting
                                 }
                             case ('2'):
                                 {
+                                    string onOrOff = File.ReadLines(wordPackDataPath).Skip(1).Take(1).First();
                                     string[] previousFile = File.ReadAllLines(wordPackDataPath);
 
-                                    if (previousFile[1].Contains("0"))
+                                    if (onOrOff.Contains("0"))
                                     {
 
                                         previousFile[1] = "GemPack: 1";
@@ -646,9 +588,10 @@ namespace Capstone_Project_Starting
                                 }
                             case ('3'):
                                 {
+                                    string onOrOff = File.ReadLines(wordPackDataPath).Skip(2).Take(1).First();
                                     string[] previousFile = File.ReadAllLines(wordPackDataPath);
 
-                                    if (previousFile[2].Contains("0"))
+                                    if (onOrOff.Contains("0"))
                                     {
 
                                         previousFile[2] = "MoonMountainPack: 1";
@@ -664,108 +607,43 @@ namespace Capstone_Project_Starting
                                 }
                             case ('4'):
                                 {
-                                    string[] previousFile = File.ReadAllLines(wordPackDataPath);
-
-                                    if (previousFile[3].Contains("0"))
-                                    {
-
-                                        previousFile[3] = "FruitPack: 1";
-                                        File.WriteAllLines(wordPackDataPath, previousFile);
-
-                                    }
-                                    else
-                                    {
-                                        previousFile[3] = "FruitPack: 0";
-                                        File.WriteAllLines(wordPackDataPath, previousFile);
-                                    }
                                     break;
                                 }
                             case ('5'):
                                 {
-                                    string[] previousFile = File.ReadAllLines(wordPackDataPath);
-
-                                    if (previousFile[4].Contains("0"))
-                                    {
-
-                                        previousFile[4] = "AncientEmpirePack: 1";
-                                        File.WriteAllLines(wordPackDataPath, previousFile);
-
-                                    }
-                                    else
-                                    {
-                                        previousFile[4] = "AncientEmpirePack: 0";
-                                        File.WriteAllLines(wordPackDataPath, previousFile);
-                                    }
                                     break;
                                 }
                             case ('6'):
                                 {
-                                    string[] previousFile = File.ReadAllLines(wordPackDataPath);
-
-                                    if (previousFile[5].Contains("0"))
-                                    {
-
-                                        previousFile[5] = "InstrumentPack: 1";
-                                        File.WriteAllLines(wordPackDataPath, previousFile);
-
-                                    }
-                                    else
-                                    {
-                                        previousFile[5] = "InstrumentPack: 0";
-                                        File.WriteAllLines(wordPackDataPath, previousFile);
-                                    }
                                     break;
                                 }
                             case ('7'):
                                 {
-                                    string[] previousFile = File.ReadAllLines(wordPackDataPath);
-
-                                    if (previousFile[6].Contains("0"))
-                                    {
-
-                                        previousFile[6] = "WOTDUnoPack: 1";
-                                        File.WriteAllLines(wordPackDataPath, previousFile);
-
-                                    }
-                                    else
-                                    {
-                                        previousFile[6] = "WOTDUnoPack: 0";
-                                        File.WriteAllLines(wordPackDataPath, previousFile);
-                                    }
                                     break;
                                 }
                             case ('8'):
                                 {
-                                    string[] previousFile = File.ReadAllLines(wordPackDataPath);
-
-                                    if (previousFile[7].Contains("0"))
-                                    {
-
-                                        previousFile[7] = "WOTDDosPack: 1";
-                                        File.WriteAllLines(wordPackDataPath, previousFile);
-
-                                    }
-                                    else
-                                    {
-                                        previousFile[7] = "WOTDDosPack: 0";
-                                        File.WriteAllLines(wordPackDataPath, previousFile);
-                                    }
                                     break;
                                 }
                             case ('9'):
                                 {
+                                    break;
+                                }
+                            case ('0'):
+                                {
+                                    string onOrOff = File.ReadLines(wordPackDataPath).Skip(9).Take(1).First();
                                     string[] previousFile = File.ReadAllLines(wordPackDataPath);
 
-                                    if (previousFile[8].Contains("0"))
+                                    if (onOrOff.Contains("0"))
                                     {
 
-                                        previousFile[8] = "WOTDTresPack: 1";
+                                        previousFile[9] = "FruitPack: 1";
                                         File.WriteAllLines(wordPackDataPath, previousFile);
 
                                     }
                                     else
                                     {
-                                        previousFile[8] = "WOTDTresPack: 0";
+                                        previousFile[9] = "FruitPack: 0";
                                         File.WriteAllLines(wordPackDataPath, previousFile);
                                     }
                                     break;
@@ -777,7 +655,7 @@ namespace Capstone_Project_Starting
                                 }
                             default:
                                 {
-                                    Console.WriteLine(" Invalid choice. Please select a number 1-9 or ~");
+                                    Console.WriteLine(" Invalid choice. Please select a number 1-0 or ~");
                                     validResponse = false;
                                     break;
                                 }
@@ -787,25 +665,12 @@ namespace Capstone_Project_Starting
             }
             catch
             {
-                try
-                {
-                    File.Create(wordPackDataPath);
-                    Console.WriteLine("File did not previously exist, so it was created.");
-                    Console.WriteLine("Exiting to the main menu.");
-                    DisplayContinuePrompt();
-                }
-                catch
-                {
-                    //
-                    //This block is used if the file cannot be reached. 
-                    //
-                    DisplayScreenHeader("Word Packs");
+                DisplayScreenHeader("Word Packs");
 
-                    Console.WriteLine("Error!");
-                    Console.WriteLine($"The program cannot reach the word packs file at {wordPackDataPath}");
-                    Console.WriteLine("Please try making sure the file exists");
-                    DisplayContinuePrompt();
-                }
+                Console.WriteLine("Error!");
+                Console.WriteLine($"The program cannot reach the word packs file at {wordPackDataPath}");
+                Console.WriteLine("Please try making sure the file exists");
+                DisplayContinuePrompt();
             }
         }
 
@@ -818,9 +683,8 @@ namespace Capstone_Project_Starting
         {
             switch (currentLine)
             {
-                //Vegetables
                 case (1):
-                    {
+                {
                         hiddenWords.Add("cucumber");
                         hiddenWords.Add("artichoke");
                         hiddenWords.Add("rutabaga");
@@ -831,21 +695,10 @@ namespace Capstone_Project_Starting
                         hiddenWords.Add("arrowroot");
                         hiddenWords.Add("eggplant");
                         hiddenWords.Add("lettuce");
-                        hiddenWords.Add("asparagus");
-                        hiddenWords.Add("cauliflower");
-                        hiddenWords.Add("mushroom");
-                        hiddenWords.Add("potato");
-                        hiddenWords.Add("shallot");
-                        hiddenWords.Add("spinach");
-                        hiddenWords.Add("zucchini");
-                        hiddenWords.Add("turnip");
-                        hiddenWords.Add("squash");
-                        hiddenWords.Add("pumpkin");
                         break;
-                    }
-                //Gemstones
+                }
                 case (2):
-                    {
+                {
                         hiddenWords.Add("chrysolite");
                         hiddenWords.Add("sapphire");
                         hiddenWords.Add("garnet");
@@ -867,10 +720,9 @@ namespace Capstone_Project_Starting
                         hiddenWords.Add("jasper");
                         hiddenWords.Add("carnelian");
                         break;
-                    }
-                //Mountain Moons
+                }
                 case (3):
-                    {
+                {
                         hiddenWords.Add("huygens");
                         hiddenWords.Add("hadley");
                         hiddenWords.Add("bradley");
@@ -893,9 +745,32 @@ namespace Capstone_Project_Starting
                         hiddenWords.Add("hansteen");
 
                         break;
-                    }
-                //Fruits
+                }
                 case (4):
+                {
+                        break;
+                }
+                case (5):
+                {
+                        break;
+                }
+                case (6):
+                    {
+                        break;
+                    }
+                case (7):
+                    {
+                        break;
+                    }
+                case (8):
+                    {
+                        break;
+                    }
+                case (9):
+                    {
+                        break;
+                    }
+                case (0):
                     {
                         hiddenWords.Add("apple");
                         hiddenWords.Add("pear");
@@ -911,7 +786,7 @@ namespace Capstone_Project_Starting
                         hiddenWords.Add("passionfruit");
                         hiddenWords.Add("watermelon");
                         hiddenWords.Add("tomatoe");
-                        hiddenWords.Add("avocado");
+                        hiddenWords.Add("avacado");
                         hiddenWords.Add("blueberry");
                         hiddenWords.Add("raspberry");
                         hiddenWords.Add("kiwi");
@@ -919,132 +794,6 @@ namespace Capstone_Project_Starting
                         hiddenWords.Add("mandarin");
                         break;
                     }
-                //Ancient Empires
-                case (5):
-                    {
-                        hiddenWords.Add("akkadian");
-                        hiddenWords.Add("babylonian");
-                        hiddenWords.Add("egyptian");
-                        hiddenWords.Add("mitanni");
-                        hiddenWords.Add("hittite");
-                        hiddenWords.Add("carthaginian");
-                        hiddenWords.Add("kushite");
-                        hiddenWords.Add("median");
-                        hiddenWords.Add("achaemenid");
-                        hiddenWords.Add("nanda");
-                        hiddenWords.Add("macedonian");
-                        hiddenWords.Add("mauryan");
-                        hiddenWords.Add("seleucid");
-                        hiddenWords.Add("ptolemaic");
-                        hiddenWords.Add("parthian");
-                        hiddenWords.Add("armenian");
-                        hiddenWords.Add("shunga");
-                        hiddenWords.Add("pontic");
-                        hiddenWords.Add("roman");
-                        hiddenWords.Add("aksumite");
-                        break;
-                    }
-                //Instruments
-                case (6):
-                    {
-                        hiddenWords.Add("flute");
-                        hiddenWords.Add("keyboard");
-                        hiddenWords.Add("cowbell");
-                        hiddenWords.Add("clarient");
-                        hiddenWords.Add("guitar");
-                        hiddenWords.Add("saxophone");
-                        hiddenWords.Add("kazoo");
-                        hiddenWords.Add("viola");
-                        hiddenWords.Add("maracas");
-                        hiddenWords.Add("fiddle");
-                        hiddenWords.Add("accordion");
-                        hiddenWords.Add("harmonica");
-                        hiddenWords.Add("tambourine");
-                        hiddenWords.Add("ocarina");
-                        hiddenWords.Add("piccolo");
-                        hiddenWords.Add("vibraphone");
-                        hiddenWords.Add("bagpipes");
-                        hiddenWords.Add("ukulele");
-                        hiddenWords.Add("trumpet");
-                        hiddenWords.Add("drums");
-                        break;
-                    }
-                //Word of the day - Pack 1
-                case (7):
-                    {
-                        hiddenWords.Add("apocryphal");
-                        hiddenWords.Add("dilapidated");
-                        hiddenWords.Add("fraught");
-                        hiddenWords.Add("sobriquet");
-                        hiddenWords.Add("chilblain");
-                        hiddenWords.Add("posthaste");
-                        hiddenWords.Add("aphorism");
-                        hiddenWords.Add("teleological");
-                        hiddenWords.Add("gambit");
-                        hiddenWords.Add("incongruous");
-                        hiddenWords.Add("officious");
-                        hiddenWords.Add("recondite");
-                        hiddenWords.Add("fortitude");
-                        hiddenWords.Add("heterodox");
-                        hiddenWords.Add("sempiternal");
-                        hiddenWords.Add("retinue");
-                        hiddenWords.Add("comestible");
-                        hiddenWords.Add("incognito");
-                        hiddenWords.Add("pointillistic");
-                        hiddenWords.Add("lyric");
-                        break;
-                    }
-                //Word of the day - Pack 2
-                case (8):
-                    {
-                        hiddenWords.Add("mitigate");
-                        hiddenWords.Add("sawbones");
-                        hiddenWords.Add("futhark");
-                        hiddenWords.Add("divulge");
-                        hiddenWords.Add("redound");
-                        hiddenWords.Add("caustic");
-                        hiddenWords.Add("scapegoat");
-                        hiddenWords.Add("blandish");
-                        hiddenWords.Add("exoteric");
-                        hiddenWords.Add("wheedle");
-                        hiddenWords.Add("belfry");
-                        hiddenWords.Add("hobbyhorse");
-                        hiddenWords.Add("maunder");
-                        hiddenWords.Add("knackered");
-                        hiddenWords.Add("fiduciary");
-                        hiddenWords.Add("coruscate");
-                        hiddenWords.Add("undulate");
-                        hiddenWords.Add("lackadaisical");
-                        hiddenWords.Add("respite");
-                        hiddenWords.Add("phantasm");
-                        break;
-                    }
-                //Word of the day - Pack 3
-                case (9):
-                    {
-                        hiddenWords.Add("prodigious");
-                        hiddenWords.Add("hypermnesia");
-                        hiddenWords.Add("ephemeral");
-                        hiddenWords.Add("asperity");
-                        hiddenWords.Add("trivial");
-                        hiddenWords.Add("stratagem");
-                        hiddenWords.Add("footle");
-                        hiddenWords.Add("incipient");
-                        hiddenWords.Add("darling");
-                        hiddenWords.Add("regale");
-                        hiddenWords.Add("countermand");
-                        hiddenWords.Add("palimpsest");
-                        hiddenWords.Add("tenacious");
-                        hiddenWords.Add("remittance");
-                        hiddenWords.Add("pungle");
-                        hiddenWords.Add("scavenger");
-                        hiddenWords.Add("disparage");
-                        hiddenWords.Add("commemorate");
-                        hiddenWords.Add("lacuna");
-                        hiddenWords.Add("disbursement");
-                        break;
-                    }
-
                 default:
                     {
                         break;
@@ -1132,318 +881,7 @@ namespace Capstone_Project_Starting
         }
 
         /// <summary>
-        /// Shows the hanged man.
-        /// </summary>
-        /// <param name="cursorLeftPosition"></param>
-        /// <param name="cursorTopPosition"></param>
-        /// <param name="incorrectGuesses"></param>
-        private static void HangmanGuyDisplay(int cursorLeftPosition, int cursorTopPosition, int incorrectGuesses)
-        {
-            const int CURSOR_LEFT_BUFFER = 55;
-
-            //
-            // This try makes sure the program does not crash if the window is resized too small.
-            // If the window is too small intially, then it just makes the hangman below the alphabet display (7 below initial position)
-            //
-            try
-            {
-                Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 2);
-                switch (incorrectGuesses)
-                {
-                    case (0):
-                        {
-                            Console.WriteLine(" _____ ");
-                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 3);
-                            Console.WriteLine(" |   | ");
-                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 4);
-                            Console.WriteLine("     | ");
-                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 5);
-                            Console.WriteLine("     | ");
-                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 6);
-                            Console.WriteLine("     | ");
-                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 7);
-                            Console.WriteLine("_____|_");
-                            break;
-                        }
-                    case (1):
-                        {
-                            Console.WriteLine(" _____ ");
-                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 3);
-                            Console.WriteLine(" |   | ");
-                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 4);
-                            Console.WriteLine(" o   | ");
-                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 5);
-                            Console.WriteLine("     | ");
-                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 6);
-                            Console.WriteLine("     | ");
-                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 7);
-                            Console.WriteLine("_____|_");
-                            break;
-                        }
-                    case (2):
-                        {
-                            Console.WriteLine(" _____ ");
-                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 3);
-                            Console.WriteLine(" |   | ");
-                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 4);
-                            Console.WriteLine(" o   | ");
-                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 5);
-                            Console.WriteLine(" |   | ");
-                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 6);
-                            Console.WriteLine("     | ");
-                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 7);
-                            Console.WriteLine("_____|_");
-                            break;
-                        }
-                    case (3):
-                        {
-                            Console.WriteLine(" _____ ");
-                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 3);
-                            Console.WriteLine(" |   | ");
-                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 4);
-                            Console.WriteLine(" o   | ");
-                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 5);
-                            Console.WriteLine("/|   | ");
-                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 6);
-                            Console.WriteLine("     | ");
-                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 7);
-                            Console.WriteLine("_____|_");
-                            break;
-                        }
-                    case (4):
-                        {
-                            Console.WriteLine(" _____ ");
-                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 3);
-                            Console.WriteLine(" |   | ");
-                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 4);
-                            Console.WriteLine(" o   | ");
-                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 5);
-                            Console.WriteLine("/|\\  | ");
-                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 6);
-                            Console.WriteLine("     | ");
-                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 7);
-                            Console.WriteLine("_____|_");
-                            break;
-                        }
-                    case (5):
-                        {
-                            Console.WriteLine(" _____ ");
-                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 3);
-                            Console.WriteLine(" |   | ");
-                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 4);
-                            Console.WriteLine(" o   | ");
-                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 5);
-                            Console.WriteLine("/|\\  | ");
-                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 6);
-                            Console.WriteLine("  \\  | ");
-                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 7);
-                            Console.WriteLine("_____|_");
-                            break;
-                        }
-                    case (6):
-                        {
-                            Console.WriteLine(" _____ ");
-                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 3);
-                            Console.WriteLine(" |   | ");
-                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 4);
-                            Console.WriteLine(" o   | ");
-                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 5);
-                            Console.WriteLine("/|\\  | ");
-                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 6);
-                            Console.WriteLine("/ \\  | ");
-                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 7);
-                            Console.WriteLine("_____|_");
-                            break;
-                        }
-                    case (7):
-                        {
-                            Console.WriteLine(" _____ ");
-                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 3);
-                            Console.WriteLine(" |   | ");
-                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 4);
-                            Console.ForegroundColor = ConsoleColor.Red;
-                            Console.Write(" x  ");
-                            Console.ForegroundColor = ConsoleColor.White;
-                            Console.Write(" | ");
-                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 5);
-                            Console.WriteLine("/|\\  | ");
-                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 6);
-                            Console.WriteLine("/ \\  | ");
-                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 7);
-                            Console.WriteLine("_____|_");
-                            break;
-                        }
-                    default:
-                        {
-                            Console.WriteLine(" _____ ");
-                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 3);
-                            Console.WriteLine(" |   | ");
-                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 4);
-                            Console.WriteLine("     | ");
-                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 5);
-                            Console.WriteLine("     | ");
-                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 6);
-                            Console.WriteLine("     | ");
-                            Console.SetCursorPosition(cursorLeftPosition + CURSOR_LEFT_BUFFER, cursorTopPosition + 7);
-                            Console.WriteLine("_____|_");
-                            break;
-                        }
-                }
-            }
-            catch
-            {
-                Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 7);
-                switch (incorrectGuesses)
-                {
-                    case (0):
-                        {
-                            Console.WriteLine(" _____ ");
-                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 8);
-                            Console.WriteLine(" |   | ");
-                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 9);
-                            Console.WriteLine("     | ");
-                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 10);
-                            Console.WriteLine("     | ");
-                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 11);
-                            Console.WriteLine("     | ");
-                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 12);
-                            Console.WriteLine("_____|_");
-                            break;
-                        }
-                    case (1):
-                        {
-                            Console.WriteLine(" _____ ");
-                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 8);
-                            Console.WriteLine(" |   | ");
-                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 9);
-                            Console.WriteLine(" o   | ");
-                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 10);
-                            Console.WriteLine("     | ");
-                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 11);
-                            Console.WriteLine("     | ");
-                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 12);
-                            Console.WriteLine("_____|_");
-                            break;
-                        }
-                    case (2):
-                        {
-                            Console.WriteLine(" _____ ");
-                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 8);
-                            Console.WriteLine(" |   | ");
-                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 9);
-                            Console.WriteLine(" o   | ");
-                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 10);
-                            Console.WriteLine(" |   | ");
-                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 11);
-                            Console.WriteLine("     | ");
-                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 12);
-                            Console.WriteLine("_____|_");
-                            break;
-                        }
-                    case (3):
-                        {
-                            Console.WriteLine(" _____ ");
-                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 8);
-                            Console.WriteLine(" |   | ");
-                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 9);
-                            Console.WriteLine(" o   | ");
-                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 10);
-                            Console.WriteLine("/|   | ");
-                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 11);
-                            Console.WriteLine("     | ");
-                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 12);
-                            Console.WriteLine("_____|_");
-                            break;
-                        }
-                    case (4):
-                        {
-                            Console.WriteLine(" _____ ");
-                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 8);
-                            Console.WriteLine(" |   | ");
-                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 9);
-                            Console.WriteLine(" o   | ");
-                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 10);
-                            Console.WriteLine("/|\\  | ");
-                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 11);
-                            Console.WriteLine("     | ");
-                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 12);
-                            Console.WriteLine("_____|_");
-                            break;
-                        }
-                    case (5):
-                        {
-                            Console.WriteLine(" _____ ");
-                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 8);
-                            Console.WriteLine(" |   | ");
-                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 9);
-                            Console.WriteLine(" o   | ");
-                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 10);
-                            Console.WriteLine("/|\\  | ");
-                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 11);
-                            Console.WriteLine("  \\  | ");
-                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 12);
-                            Console.WriteLine("_____|_");
-                            break;
-                        }
-                    case (6):
-                        {
-                            Console.WriteLine(" _____ ");
-                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 8);
-                            Console.WriteLine(" |   | ");
-                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 9);
-                            Console.WriteLine(" o   | ");
-                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 10);
-                            Console.WriteLine("/|\\  | ");
-                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 11);
-                            Console.WriteLine("/ \\  | ");
-                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 12);
-                            Console.WriteLine("_____|_");
-                            break;
-                        }
-                    case (7):
-                        {
-                            Console.WriteLine(" _____ ");
-                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 8);
-                            Console.WriteLine(" |   | ");
-                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 9);
-                            Console.ForegroundColor = ConsoleColor.Red;
-                            Console.Write(" x  ");
-                            Console.ForegroundColor = ConsoleColor.White;
-                            Console.Write(" | ");
-                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 10);
-                            Console.WriteLine("/|\\  | ");
-                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 11);
-                            Console.WriteLine("/ \\  | ");
-                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 12);
-                            Console.WriteLine("_____|_");
-                            break;
-                        }
-                    default:
-                        {
-                            Console.WriteLine(" _____ ");
-                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 8);
-                            Console.WriteLine(" |   | ");
-                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 9);
-                            Console.WriteLine("     | ");
-                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 10);
-                            Console.WriteLine("     | ");
-                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 11);
-                            Console.WriteLine("     | ");
-                            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition + 12);
-                            Console.WriteLine("_____|_");
-                            break;
-                        }
-                }
-            }
-
-
-
-
-            Console.SetCursorPosition(cursorLeftPosition, cursorTopPosition);
-        }
-
-        /// <summary>
-        /// Display continue prompt
+        /// display continue prompt
         /// </summary>
         private static void DisplayContinuePrompt()
         {
@@ -1508,7 +946,7 @@ namespace Capstone_Project_Starting
         private static bool ReadWordsFromFile(string customDataPath, List<string> hiddenWord)
         {
             bool errorOccured = false;
-
+            
             try
             {
                 string[] listOfWords = File.ReadAllLines(customDataPath);
@@ -1526,7 +964,7 @@ namespace Capstone_Project_Starting
             }
             catch
             {
-                errorOccured = true;
+               errorOccured = true;
             }
 
             return errorOccured;
@@ -1535,27 +973,24 @@ namespace Capstone_Project_Starting
 
         }
 
-        /// <summary>
-        /// Adds custom words to the WordList file, if the word only contains letters of the alphabet
-        /// </summary>
-        /// <param name="customWordDataPath"></param>
-        /// <param name="alphabet"></param>
         private static void DisplayAddCustomWords(string customWordDataPath, List<char> alphabet)
         {
             string newWord;
-            bool invalidWord;
+            bool invalidWord = false;
             bool exitToMenu = false;
+            bool invalidLetter;
             DisplayScreenHeader("Adding Custom Words");
 
             Console.WriteLine("Simply write in any words, using letters a-z, to add the words to the word pack!");
-            Console.WriteLine("Press ~ when you wish to exit to the menu.");
+            Console.WriteLine("Press ~ when you wish to exit to the menu");
 
             //
             // Reads the input to add the word.
             //
             do
             {
-                newWord = Console.ReadLine().ToLower();
+                newWord = Console.ReadLine();
+                invalidLetter = true;
 
                 if (newWord == "~")
                 {
@@ -1563,7 +998,6 @@ namespace Capstone_Project_Starting
                 }
                 else
                 {
-                    invalidWord = true;
                     foreach (char wordLetter in newWord)
                     {
                         invalidWord = true;
@@ -1571,8 +1005,11 @@ namespace Capstone_Project_Starting
                         {
                             if (wordLetter == letter)
                             {
+                                invalidLetter = false;
+                            }
+                            if (!invalidLetter)
+                            {
                                 invalidWord = false;
-                                break;
                             }
                         }
                         if (invalidWord)
@@ -1589,22 +1026,13 @@ namespace Capstone_Project_Starting
                         try
                         {
                             File.AppendAllText(customWordDataPath, newWord);
-                            File.AppendAllText(customWordDataPath, "\n");
                             Console.Write($"  {newWord} added!");
                             Console.WriteLine();
                         }
                         catch
                         {
-                            try
-                            {
-                                File.Create(customWordDataPath);
-                                Console.WriteLine("File created! Try re-adding in the word!");
-                            }
-                            catch
-                            {
-                                Console.WriteLine("Application could not write to to the file.");
-                                Console.WriteLine("Make sure that the application can access the file and try again.");
-                            }
+                            Console.WriteLine("Application could not write to to the file.");
+                            Console.WriteLine("Make sure that the application can access the file and try again.");
                         }
                     }
                 }
@@ -1615,117 +1043,9 @@ namespace Capstone_Project_Starting
 
         }
 
-        /// <summary>
-        /// Shows the user all their custom words, and lets them delete the words by typing them in.
-        /// </summary>
-        /// <param name="customWordDataPath"></param>
-        /// <param name="alphabet"></param>
-        private static void DisplayRemoveCustomWords(string customWordDataPath)
+        private static void DisplayRemoveCustomWords(string customWordDataPath, List<char> alphabet)
         {
-            bool doneWithRemoving = false;
 
-            DisplayScreenHeader("Removing Custom Words");
-
-            //
-            // The main loop for removing custom words
-            // Provided the file can be reached, it displays all the custom words and lets the user type in the one they want deleted.
-            //
-            do
-            {
-
-                try
-                {
-                    //
-                    // Creates a list by looking at the word list file.
-                    //
-                    List<string> allCustomWords = File.ReadAllLines(customWordDataPath).ToList();
-
-                    if (allCustomWords.Count == 0)
-                    {
-                        Console.WriteLine("There are no custom words.");
-                        Console.WriteLine("As such, no custom words can be removed.");
-                        DisplayContinuePrompt();
-                        doneWithRemoving = true;
-                    }
-                    else
-                    {
-                        Console.WriteLine();
-                        Console.WriteLine("Current Words:");
-                        foreach (string word in allCustomWords)
-                        {
-                            Console.WriteLine(word);
-                        }
-                        Console.WriteLine();
-                        Console.WriteLine("Please type in the word you would like to remove.");
-                        Console.WriteLine("If you are done, type in ~ to exit.");
-
-                        //
-                        // Checks the user input. If it is the same as a custom word, it removes the custom word.
-                        //
-                        string userInput = Console.ReadLine().ToLower();
-                        if (userInput == "~")
-                        {
-                            doneWithRemoving = true;
-                        }
-                        else
-                        {
-                            foreach (string word in allCustomWords)
-                            {
-                                if (userInput == word.ToLower())
-                                {
-                                    allCustomWords.Remove(word);
-                                    break;
-                                }
-                            }
-                            File.WriteAllLines(customWordDataPath, allCustomWords);
-                        }
-                    }
-                }
-                catch
-                {
-                    Console.WriteLine("The file could not be reached.");
-                    Console.WriteLine("Please make sure you can access and modify a file at the data path.");
-                    Console.WriteLine($"The datapath is {customWordDataPath}");
-                    doneWithRemoving = true;
-                    DisplayContinuePrompt();
-                }
-            } while (!doneWithRemoving);
-        }
-
-        /// <summary>
-        /// Shows the user how to play hangman.
-        /// </summary>
-        private static void DisplayHowToPlay()
-        {
-            //
-            //Simply a wall of text that shows the user how to play hangman.
-            //
-            DisplayScreenHeader("How to Play");
-
-            Console.WriteLine("Playing hangman is quit simple.");
-            Console.WriteLine("The computer picks a word, and displays the word, replacing unguessed letters with *.");
-            Console.WriteLine("Simply guess a letter a-z that you think is in the picked word.");
-            Console.WriteLine("If you are correct, the displayed word replaces any * with the correct letter.");
-            Console.WriteLine("However, incorrect guesses further detail the hangman, with enough incorrect guesses losing you the game.");
-            Console.WriteLine("You win if you guess all the letters of the word before the hangman is finished.");
-
-            DisplayContinuePrompt();
-        }
-
-        /// <summary>
-        /// Displays the opening screen that pops up when you start the application.
-        /// </summary>
-        private static void DisplayOpeningScreen()
-        {
-            DisplayScreenHeader("Welcome!");
-
-            Console.WriteLine();
-            Console.WriteLine("This application will let you play hangman!");
-            Console.WriteLine("For more information on how to play hangman, goto the 'How to Play' section on the continuing screen.");
-            Console.WriteLine("This application also lets you add in custom words or add in packs of words.");
-            Console.WriteLine("In most screens, entering in '~' will bring you back to the main menu.");
-
-            DisplayContinuePrompt();
         }
     }
 
